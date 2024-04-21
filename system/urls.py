@@ -31,5 +31,5 @@ urlpatterns = [
     path('พนักงาน/', views.index, name='Employee'),
     path('ตั้งค่าระบบ/', views.index, name='Setting'),
     path('เข้าสู่ระบบ/', views.login, name='Login'),
-    path('ออกจากระบบ/', views.index, name='Logout')
+    path('ออกจากระบบ/', views.logout, name='Logout')
 ]

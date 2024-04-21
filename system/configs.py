@@ -4,4 +4,4 @@ class Header:
     
 # Footer Site
 class Footer:
-    version = "0.0.1" # Version
+    version = "0.0.2" # Version

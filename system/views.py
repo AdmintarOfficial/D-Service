@@ -1,6 +1,9 @@
-from django.shortcuts import render
+# Library Global
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
 
-from . import contexts
+# Library App
+from . import functions, contexts, objects
 
 # Create your views here.
 
@@ -8,47 +11,87 @@ from . import contexts
 
 # Index
 def index(request):
-    return render(request, 'index.html', contexts.Context_Default(request))
+    if request.user.is_authenticated:
+        return render(request, 'index.html', contexts.Context_Default(request))
+    else:
+        return redirect('/เข้าสู่ระบบ/')
 
 # SamsungFinance
 def samsungfinance(request):
-    return render(request, 'SamsungFinance.html', contexts.Context_Default(request))
+    if request.user.is_authenticated:
+        return render(request, 'SamsungFinance.html', contexts.Context_Default(request))
+    else:
+        return redirect('/เข้าสู่ระบบ/')
 
 # Sale
 def sale(request):
-    return render(request, 'sale.html', contexts.Context_Default(request))
+    if request.user.is_authenticated:
+        if 'tbarcode' in request.POST:
+            # Add items to cart actions
+            addcart = functions.AddCart(request)
+            return HttpResponse(addcart, content_type="application/json")
+        else:
+            # Context member
+            context = contexts.Context_Default(request)
+            # Add context
+            context['Cart'] = objects.Cart(request)
+            return render(request, 'sale.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')    
 
 # Sale-SIM
 def sale_sim(request):
-    return render(request, 'sale-sim.html', contexts.Context_Default(request))
+    if request.user.is_authenticated:
+        return render(request, 'sale-sim.html', contexts.Context_Default(request))
+    else:
+        return redirect('/เข้าสู่ระบบ/')  
 
 # Top up
 def topup(request):
-    return render(request, 'topup.html', contexts.Context_Default(request))
+    if request.user.is_authenticated:
+        return render(request, 'topup.html', contexts.Context_Default(request))
+    else:
+        return redirect('/เข้าสู่ระบบ/')  
 
 # Invoice
 def invoice(request):
-    return render(request, 'invoice.html', contexts.Context_Default(request))
+    if request.user.is_authenticated:
+        return render(request, 'invoice.html', contexts.Context_Default(request))
+    else:
+        return redirect('/เข้าสู่ระบบ/')  
 
 def invoice_print(request):
-    return render(request, 'prints/invoice.html', contexts.Context_Default(request))
-
-
+    if request.user.is_authenticated:
+        return render(request, 'prints/invoice.html', contexts.Context_Default(request))
+    else:
+        return redirect('/เข้าสู่ระบบ/')
 #== End sale System ==#
 
 #== Warehouse ==#
 
 # Store
 def store(request):
-    return render(request, 'store.html', contexts.Context_Default(request))
-
+    if request.user.is_authenticated:
+        # Context member
+        context = contexts.Context_Default(request)
+        # Add context
+        context['Store'] = objects.store(request, None)
+        return render(request, 'store.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')
+    
 # Check Stock
 def checkstock(request):
-    return render(request, 'checkstock.html', contexts.Context_Default(request))
+    if request.user.is_authenticated:
+        return render(request, 'checkstock.html', contexts.Context_Default(request))
+    else:
+        return redirect('/เข้าสู่ระบบ/')
 
 def checkstock_print(request):
-    return render(request, 'prints/checkstock.html', contexts.Context_Default(request))
-
+    if request.user.is_authenticated:
+        return render(request, 'prints/checkstock.html', contexts.Context_Default(request))
+    else:
+        return redirect('/เข้าสู่ระบบ/')
 
 #== End Warehouse ==#
 
@@ -64,8 +107,20 @@ def members(request):
 
 #== Authenticate ==#
 
-# Login
+# Login & Logout
 def login(request):
-    return render(request, 'login.html', contexts.Context_Default(request))
+    if request.user.is_authenticated:
+        return redirect('/')
+    else:
+        if 'tlogin' in request.POST:
+            # Login actions
+            login = functions.Login(request)
+            return HttpResponse(login, content_type="application/json")
+        else:
+            return render(request, 'login.html', contexts.Context_Default(request))
+
+def logout(request):
+    functions.Logout(request)
+    return redirect('/')
 
 #== End Authenticate ==#

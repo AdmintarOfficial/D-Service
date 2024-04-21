@@ -72,20 +72,23 @@
               <th>บาร์โค้ด</th>
               <th>ชื่อสินค้า</th>
               <th>ราคาขาย</th>
-              <th>คงเหลือ</th>
               <th>ประเภท</th>
+              <th>วันที่รับเข้า</th>
             </tr>
             </thead>
             <tbody>
+            {% for item in Store %}
             <tr>
-              <td>S97669879</td>
-              <td>568568548458</td>
-              <td>Samsung A05 4/64</td>
-              <td>3699</td>
-              <td>1</td>
-              <td>มือถือ</td>
+              <td>{{item.item_id.product_id}}</td>
+              <td>{{item.item_barcode}}</td>
+              <td>{{item.item_id.product_name}}</td>
+              <td>{{item.item_id.product_price}}</td>
+              <td>{{item.item_id.get_product_type_display}}</td>
+              <td>{{item.item_regis}}</td>
             </tr>
+            {% endfor %}
             </tbody>
+
             <tfoot>
             <!--tr>
                 <th>รหัสสินค้า</th>
