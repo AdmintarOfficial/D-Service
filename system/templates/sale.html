@@ -39,6 +39,15 @@
         $('.select2').select2()
     });
 </script>
+<script>
+    var input = document.getElementById("barcode");
+    input.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("addcart").click();
+      }
+    });
+    </script>
 {% endblock %}
 
 
@@ -52,19 +61,19 @@
                         <div class="col-6">
                             <div class="form-group">
                                 <label>สมาชิก :</label>
-                                <select class="select2" style="width: 100%;">
-                                    <option selected>ลูกค้าทั่วไป</option>
-                                    <option>สมชาย ใจป้ำ</option>
+                                <select class="select2" id="member" style="width: 100%;">
+                                    <option value="0" selected>ลูกค้าทั่วไป</option>
+                                    <option value="1">สมชาย ใจป้ำ</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="form-group">
                                 <label>ประเภท :</label>
-                                <select class="select2" style="width: 100%;">
-                                    <option selected>รับหน้าร้าน</option>
-                                    <option>นอกสถานที่</option>
-                                    <option>จัดส่ง</option>
+                                <select class="select2" id="type" style="width: 100%;">
+                                    <option value="1" selected>รับหน้าร้าน</option>
+                                    <option value="2">นอกสถานที่</option>
+                                    <option value="3">จัดส่ง</option>
                                 </select>
                             </div>
                         </div>
@@ -85,40 +94,37 @@
                                     <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
+
                                 <div class="modal-body">
-                                    
-                                    <form name="GetMoneyform" class="form-horizontal">
-                                        <div class="card-body">
-    
-                                            <div class="form-group row">
-                                                <label for="" class="col-sm-2 col-form-label">เงินสด</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" placeholder="กรอกจำนวนรับเงินสด">
-                                                </div>
+                                    <div class="card-body">
+                                        <div class="form-group row">
+                                            <label for="" class="col-sm-2 col-form-label">เงินสด</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="cash" class="form-control" placeholder="กรอกจำนวนรับเงินสด" maxlength="5">
                                             </div>
-    
-                                            <div class="form-group row">
-                                                <label for="" class="col-sm-2 col-form-label">เงินโอน</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" placeholder="กรอกจำนวนรับเงินโอน">
-                                                </div>
-                                            </div>
-
-                                            <div class="form-group row">
-                                                <label for="" class="col-sm-2 col-form-label">ส่วนลด</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" placeholder="กรอกจำนวนส่วนลด">
-                                                </div>
-                                            </div>
-
                                         </div>
-                                        <!-- /.card-footer -->
-                                    </form>
-    
+
+                                        <div class="form-group row">
+                                            <label for="" class="col-sm-2 col-form-label">เงินโอน</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="transfer" class="form-control" placeholder="กรอกจำนวนรับเงินโอน" maxlength="5">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="" class="col-sm-2 col-form-label">ส่วนลด</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="discount" class="form-control" placeholder="กรอกจำนวนส่วนลด" maxlength="5">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /.card-footer -->
                                 </div>
+
                                 <div class="modal-footer justify-content-between">
                                     <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
-                                    <button type="submit" class="btn btn-primary">รับเงิน</button>
+                                    {% csrf_token %}
+                                    <button type="button" id="sellproduct" class="btn btn-primary" OnClick="JavaScript:doCallSellProduct();">รับเงิน</button>
                                 </div>
                             </div>
                             <!-- /.modal-content -->
@@ -128,7 +134,7 @@
                     <!-- /.modal -->
                 </form>
 
-                <form name="SellProductform" action="" method="post">
+                <form name="SellProductform">
                     <div class="form-group">
                         <div class="input-group input-group-lg">
                             <div class="input-group-prepend">
@@ -139,7 +145,7 @@
                             <input type="text" id="barcode" class="form-control form-control-lg" placeholder="บาร์โค้ดขาย">
                             <div class="input-group-append">
                                 {% csrf_token %}
-                                <button type="submit" id="addcart" class="btn btn-lg btn-default" OnClick="JavaScript:doCallAddCart();">
+                                <button type="button" id="addcart" class="btn btn-lg btn-default" OnClick="JavaScript:doCallAddCart();">
                                     <i class="fa fa-search"></i>
                                 </button>
                             </div>
@@ -171,15 +177,15 @@
             {% for cart in Cart %}
             <tr>
                 <td>{{cart.id}}</td>
-                <td>{{cart.sell_barcode.item_barcode}}</td>
-                <td>{{cart.sell_barcode.item_id.product_name}}</td>
-                <td>1</td>
-                <td>{{cart.sell_barcode.item_id.product_price}}</td>
+                <td>{{cart.barcode.item_barcode}}</td>
+                <td>{{cart.barcode.item_id.product_name}}</td>
+                <td>{{cart.count}}</td>
+                <td>{{cart.price}}</td>
                 <td class="project-actions text-right">
-                    <a class="btn btn-danger btn-sm" href="">
-                        <i class="fas fa-trash"></i>
-                        ลบ
-                    </a>
+                    <form name="delidform">
+                        {% csrf_token %}
+                        <button type="button" id="del_id" class="btn btn-danger btn-sm" OnClick="JavaScript:doCallDelCartID({{cart.id}});"><i class="fas fa-trash"></i>ลบ</button>
+                    </form>
                 </td>
               </tr>
             {% endfor %}
@@ -188,7 +194,7 @@
             <tfoot>
                 <tr>
                     <td colspan="4" style="text-align:right;">ราคารวม</td>
-                    <td colspan="2" style="text-align:center;"><button class="btn btn-block btn-outline-warning btn-sm">฿ 100</button></td>
+                    <td colspan="2" style="text-align:center;"><button class="btn btn-block btn-outline-warning btn-sm">฿ {{Total_Price}}</button></td>
                 </tr>
             </tfoot>
           </table>
@@ -200,7 +206,10 @@
                 <button type="button" class="btn btn-block btn-success" data-toggle="modal" data-target="#modal-default"><i class="far fa-credit-card"></i> สร้างรายการขาย</button>
             </div>
             <div class="col-3 float-right">
-                <button type="button" class="btn btn-block btn-danger"><i class="far fa-times-circle"></i> ยกเลิกการขาย</button>
+                <form name="delallform">
+                    {% csrf_token %}
+                    <button type="button" id="del_all" class="btn btn-block btn-danger" OnClick="JavaScript:doCallDelCartAll();"><i class="far fa-times-circle"></i> ยกเลิกการขาย</button>
+                </form>
             </div> 
       </div>
       <!-- /.card -->

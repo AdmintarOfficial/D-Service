@@ -29,7 +29,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',
-    'www.localhost'
+    'www.localhost',
+    '172.29.1.2',
+    'd-service.shop'
 ]
 
 

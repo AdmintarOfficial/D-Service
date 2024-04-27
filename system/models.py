@@ -58,6 +58,7 @@ class Itemlist(models.Model):
     
 # Sell Product
 class SellProduct(models.Model):
+    username = models.CharField(max_length=20)
     barcode = models.ForeignKey(Itemlist, to_field='item_barcode', on_delete=models.CASCADE)
     count = models.IntegerField(default=1)
     price = models.DecimalField(max_digits=8, decimal_places=2)

@@ -30,11 +30,24 @@ def sale(request):
             # Add items to cart actions
             addcart = functions.AddCart(request)
             return HttpResponse(addcart, content_type="application/json")
+        elif 'tdel_id' in request.POST:
+            # Del item ID
+            Del_id = functions.DelCart(request, 'Del_ID')
+            return HttpResponse(Del_id, content_type="application/json")
+        elif 'tdel_all' in request.POST:
+            # Del item ID
+            Del_All = functions.DelCart(request, 'Del_All')
+            return HttpResponse(Del_All, content_type="application/json")
+        elif 'tsellproduct' in request.POST:
+            # Sell Product
+            SellProduct = functions.SellingProduct(request)
+            return HttpResponse(SellProduct, content_type="application/json")
         else:
-            # Context member
+            # Context Default
             context = contexts.Context_Default(request)
             # Add context
-            context['Cart'] = objects.Cart(request)
+            context['Cart'] = objects.Cart(request, 'List', None)
+            context['Total_Price'] = objects.Cart(request, 'Total_Price', None)
             return render(request, 'sale.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')    
@@ -54,15 +67,30 @@ def topup(request):
         return redirect('/เข้าสู่ระบบ/')  
 
 # Invoice
+
 def invoice(request):
     if request.user.is_authenticated:
-        return render(request, 'invoice.html', contexts.Context_Default(request))
+        # Context Default
+        context = contexts.Context_Default(request)
+        # Billing context
+        context['Billing_Log'] = objects.Billing_Log(request, 'Billing_Log', request.GET.get('get'))
+        context['Billing_Detail_Log'] = objects.Billing_Log(request, 'Billing_Detail_Log', request.GET.get('get'))
+        context['Billing_Total_Price_Log'] = objects.Billing_Log(request, 'Billing_Total_Price_Log', request.GET.get('get'))
+        context['Billing_Change_Log'] = objects.Billing_Log(request, 'Billing_Change_Log', request.GET.get('get'))
+        return render(request, 'invoice.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')  
 
 def invoice_print(request):
     if request.user.is_authenticated:
-        return render(request, 'prints/invoice.html', contexts.Context_Default(request))
+        # Context Default
+        context = contexts.Context_Default(request)
+        # Billing context
+        context['Billing_Log'] = objects.Billing_Log(request, 'Billing_Log', request.GET.get('get'))
+        context['Billing_Detail_Log'] = objects.Billing_Log(request, 'Billing_Detail_Log', request.GET.get('get'))
+        context['Billing_Total_Price_Log'] = objects.Billing_Log(request, 'Billing_Total_Price_Log', request.GET.get('get'))
+        context['Billing_Change_Log'] = objects.Billing_Log(request, 'Billing_Change_Log', request.GET.get('get'))
+        return render(request, 'prints/invoice.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')
 #== End sale System ==#
@@ -72,7 +100,7 @@ def invoice_print(request):
 # Store
 def store(request):
     if request.user.is_authenticated:
-        # Context member
+        # Context Default
         context = contexts.Context_Default(request)
         # Add context
         context['Store'] = objects.store(request, None)
