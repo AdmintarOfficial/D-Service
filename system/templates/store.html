@@ -80,7 +80,7 @@
             {% for item in Store %}
             <tr>
               <td>{{item.item_id.product_id}}</td>
-              <td>{{item.item_barcode}}</td>
+              <td>{{item.barcode_ean}}</td>
               <td>{{item.item_id.product_name}}</td>
               <td>{{item.item_id.product_price}}</td>
               <td>{{item.item_id.get_product_type_display}}</td>

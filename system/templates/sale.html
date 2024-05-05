@@ -47,7 +47,7 @@
         document.getElementById("addcart").click();
       }
     });
-    </script>
+</script>
 {% endblock %}
 
 
@@ -142,7 +142,7 @@
                                 <i class="fas fa-barcode"></i>
                                 </span>
                             </div>
-                            <input type="text" id="barcode" class="form-control form-control-lg" placeholder="บาร์โค้ดขาย">
+                            <input type="text" id="barcode" class="form-control form-control-lg" placeholder="บาร์โค้ดขาย" autofocus>
                             <div class="input-group-append">
                                 {% csrf_token %}
                                 <button type="button" id="addcart" class="btn btn-lg btn-default" OnClick="JavaScript:doCallAddCart();">
@@ -174,10 +174,11 @@
               </tr>
             </thead>
             <tbody>
+                
             {% for cart in Cart %}
             <tr>
-                <td>{{cart.id}}</td>
-                <td>{{cart.barcode.item_barcode}}</td>
+                <td></td>
+                <td>{{cart.barcode.barcode_ean}}</td>
                 <td>{{cart.barcode.item_id.product_name}}</td>
                 <td>{{cart.count}}</td>
                 <td>{{cart.price}}</td>
@@ -211,7 +212,7 @@
                     <button type="button" id="del_all" class="btn btn-block btn-danger" OnClick="JavaScript:doCallDelCartAll();"><i class="far fa-times-circle"></i> ยกเลิกการขาย</button>
                 </form>
             </div> 
-      </div>
+        </div>
       <!-- /.card -->
 
 </section>

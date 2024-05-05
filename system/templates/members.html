@@ -49,7 +49,7 @@
     <div class="card card-solid">
         <div class="card-body pb-0">
 
-            <form action="">
+            <form action="" method="POST">
                 <div class="form-group">
                     <div class="input-group input-group-lg">
                         <div class="input-group-prepend">
@@ -57,9 +57,10 @@
                             <i class="fas fa-users"></i>
                             </span>
                         </div>
-                        <input type="search" class="form-control form-control-lg" placeholder="ค้นหาสมาชิก">
+                        <input type="text" id="name" name="name" class="form-control form-control-lg" placeholder="ค้นหาสมาชิก">
                         <div class="input-group-append">
-                            <button type="submit" class="btn btn-lg btn-default">
+                            {% csrf_token %}
+                            <button type="submit" id="search" name="search" class="btn btn-lg btn-default">
                                 <i class="fa fa-search"></i>
                             </button>
                         </div>
@@ -68,29 +69,25 @@
             </form>
 
             <div class="row">
-                
+            {% for member in Members %}
                 <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
                     <div class="card bg-light d-flex flex-fill">
-                        <div class="card-header text-muted border-bottom-0">
-                            Digital Strategist
-                        </div>
+                        <div class="card-header text-muted border-bottom-0"></div>
                         <div class="card-body pt-0">
                             <div class="row">
                                 <div class="col-7">
-                                    <h2 class="lead"><b>Nicole Pearson</b></h2>
-                                    <p class="text-muted text-sm"><b>About: </b> Web Designer / UX / Graphic
-                                        Artist / Coffee Lover </p>
+                                    <h2 class="lead"><b>{{member.first_name}} {{member.last_name}}</b></h2>
                                     <ul class="ml-4 mb-0 fa-ul text-muted">
-                                        <li class="small"><span class="fa-li"><i
-                                                    class="fas fa-lg fa-building"></i></span> Address: Demo
-                                            Street 123, Demo City 04312, NJ</li>
-                                        <li class="small"><span class="fa-li"><i
-                                                    class="fas fa-lg fa-phone"></i></span> Phone #: + 800 -
-                                            12 12 23 52</li>
+                                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span>
+                                            ที่อยู่ : {{member.address}}
+                                        </li>
+                                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> 
+                                            เบอร์โทรศัพท์ : {{member.phone_number}}
+                                        </li>
                                     </ul>
                                 </div>
                                 <div class="col-5 text-center">
-                                    <img src="{% static 'dist/img/user1-128x128.jpg' %}" alt="user-avatar"
+                                    <img src="/assets/dist/img/{{member.get_gender_display}}.png" alt="user-avatar"
                                         class="img-circle img-fluid">
                                 </div>
                             </div>
@@ -107,7 +104,7 @@
                         </div>
                     </div>
                 </div>
-                
+            {% endfor %} 
             </div>
         </div>
         <!-- /.card-body -->

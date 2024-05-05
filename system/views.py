@@ -19,7 +19,29 @@ def index(request):
 # SamsungFinance
 def samsungfinance(request):
     if request.user.is_authenticated:
-        return render(request, 'SamsungFinance.html', contexts.Context_Default(request))
+        if 'tbarcode' in request.POST:
+            # Add items to cart actions
+            addcart = functions.AddCart(request)
+            return HttpResponse(addcart, content_type="application/json")
+        elif 'tdel_id' in request.POST:
+            # Del item ID
+            Del_id = functions.DelCart(request, 'Del_ID')
+            return HttpResponse(Del_id, content_type="application/json")
+        elif 'tdel_all' in request.POST:
+            # Del item ID
+            Del_All = functions.DelCart(request, 'Del_All')
+            return HttpResponse(Del_All, content_type="application/json")
+        elif 'tsellproduct' in request.POST:
+            # Sell Product
+            SellProduct = functions.SellingSamsungFinance(request)
+            return HttpResponse(SellProduct, content_type="application/json")
+        else:
+            # Context Default
+            context = contexts.Context_Default(request)
+            # Add context
+            context['Cart'] = objects.Cart(request, 'List', None)
+            context['Total_Price'] = objects.Cart(request, 'Total_Price', None)
+            return render(request, 'SamsungFinance.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')
 
@@ -62,12 +84,33 @@ def sale_sim(request):
 # Top up
 def topup(request):
     if request.user.is_authenticated:
-        return render(request, 'topup.html', contexts.Context_Default(request))
+        if 'taddphone_number' in request.POST:
+            # Add items to cart actions
+            addcart = functions.AddCart_Topup(request)
+            return HttpResponse(addcart, content_type="application/json")
+        elif 'tdel_id' in request.POST:
+            # Del item ID
+            Del_id = functions.DelCart_Topup(request, 'Del_ID')
+            return HttpResponse(Del_id, content_type="application/json")
+        elif 'tdel_all' in request.POST:
+            # Del item ID
+            Del_All = functions.DelCart_Topup(request, 'Del_All')
+            return HttpResponse(Del_All, content_type="application/json")
+        elif 'tselltopup' in request.POST:
+            # Sell Product
+            SellTopup = functions.SellingTopup(request)
+            return HttpResponse(SellTopup, content_type="application/json")
+        else:
+            # Context Default
+            context = contexts.Context_Default(request)
+            # Add context
+            context['Cart'] = objects.Cart_Topup(request, 'List', None)
+            context['Total_Price'] = objects.Cart_Topup(request, 'Total_Price', None)
+            return render(request, 'topup.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')  
 
 # Invoice
-
 def invoice(request):
     if request.user.is_authenticated:
         # Context Default
@@ -91,6 +134,32 @@ def invoice_print(request):
         context['Billing_Total_Price_Log'] = objects.Billing_Log(request, 'Billing_Total_Price_Log', request.GET.get('get'))
         context['Billing_Change_Log'] = objects.Billing_Log(request, 'Billing_Change_Log', request.GET.get('get'))
         return render(request, 'prints/invoice.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')
+    
+def invoice_topup(request):
+    if request.user.is_authenticated:
+        # Context Default
+        context = contexts.Context_Default(request)
+        # Billing context
+        context['Billing_Log'] = objects.BillingTopup_Log(request, 'Billing_Log', request.GET.get('get'))
+        context['Billing_Detail_Log'] = objects.BillingTopup_Log(request, 'Billing_Detail_Log', request.GET.get('get'))
+        context['Billing_Total_Price_Log'] = objects.BillingTopup_Log(request, 'Billing_Total_Price_Log', request.GET.get('get'))
+        context['Billing_Change_Log'] = objects.BillingTopup_Log(request, 'Billing_Change_Log', request.GET.get('get'))
+        return render(request, 'invoice-topup.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')
+
+def invoice_topup_print(request):
+    if request.user.is_authenticated:
+        # Context Default
+        context = contexts.Context_Default(request)
+        # Billing context
+        context['Billing_Log'] = objects.BillingTopup_Log(request, 'Billing_Log', request.GET.get('get'))
+        context['Billing_Detail_Log'] = objects.BillingTopup_Log(request, 'Billing_Detail_Log', request.GET.get('get'))
+        context['Billing_Total_Price_Log'] = objects.BillingTopup_Log(request, 'Billing_Total_Price_Log', request.GET.get('get'))
+        context['Billing_Change_Log'] = objects.BillingTopup_Log(request, 'Billing_Change_Log', request.GET.get('get'))
+        return render(request, 'prints/invoice-topup.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')
 #== End sale System ==#
@@ -127,10 +196,21 @@ def checkstock_print(request):
 
 # Members
 def members(request):
-    return render(request, 'members.html', contexts.Context_Default(request))
-
-
-
+    if request.user.is_authenticated:
+        if 'search' in request.POST:
+            # Context Default
+            context = contexts.Context_Default(request)
+            # Add context
+            context['Members'] = objects.Members(request, request.POST.get("name", ""))
+            return render(request, 'members.html', context)
+        else:
+            # Context Default
+            context = contexts.Context_Default(request)
+            # Add context
+            context['Members'] = objects.Members(request, None)
+            return render(request, 'members.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')
 #== Members System ==#
 
 #== Authenticate ==#

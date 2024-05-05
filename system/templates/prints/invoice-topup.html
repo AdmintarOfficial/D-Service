@@ -58,7 +58,7 @@
                     <div class="col-sm-4 invoice-col">
                         <b>หมายเลขบิล #{{Billing_Log.id}}</b><br>
                         <br>
-                        <b>คำสั่งซื้อ:</b> {{Billing_Log.sell_id}}<br>
+                        <b>คำสั่งซื้อ:</b> {{Billing_Log.topup_id}}<br>
                         <b>วันที่:</b> {{Billing_Log.datetime}}<br>
                     </div>
                     <!-- /.col -->
@@ -72,9 +72,8 @@
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>บาร์โค้ดสินค้า</th>
-                                <th>รายการสินค้า</th>
-                                <th>จำนวน</th>
+                                <th>เบอร์โทร</th>
+                                <th>เครือข่าย</th>
                                 <th>ราคา</th>
                             </tr>
                             </thead>
@@ -82,10 +81,9 @@
                             {% for bdl in Billing_Detail_Log %}
                             <tr>
                                 <td></td>
-                                <td>{{bdl.sell_barcode_id}}</td>
-                                <td>{{bdl.sell_barcode.item_id.product_name}}</td>
-                                <td>1</td>
-                                <td>฿ {{bdl.sell_price}}</td>
+                                <td>{{bdl.phone_number}}</td>
+                                <td>{{bdl.get_network_display}}</td>
+                                <td>฿ {{bdl.price}}</td>
                             </tr>
                             {% endfor %}
                             </tbody>
@@ -122,25 +120,10 @@
                                         <th style="width:50%">ราคาสินค้า :</th>
                                         <td>฿ {{Billing_Total_Price_Log}}</td>
                                     </tr>
-    
-                                    {% if Billing_Log.bill_status == "1" %}
-                                    <tr>
-                                        <th>วางดาวน์ :</th>
-                                        <td>฿ {{Billing_Log.down_payment}}</td>
-                                    </tr>
                                     <tr>
                                         <th>ค่าบริการ :</th>
                                         <td>฿ {{Billing_Log.fee}}</td>
                                     </tr>
-                                    {% endif %}
-    
-                                    {% if Billing_Log.bill_status == "2" %}
-                                    <tr>
-                                        <th>ส่วนลด :</th>
-                                        <td>฿ {{Billing_Log.discount}}</td>
-                                    </tr>
-                                    {% endif %}
-    
                                     <tr>
                                         <th>จำนวนเงินทั้งสิ้น :</th>
                                         <td>฿ {{Billing_Log.total_price}}</td>
@@ -172,7 +155,6 @@
                         <div class="main-footer"></div>
                     </div>
                     <!-- /.row -->
-                </div>
                 <!-- /.invoice -->
                 </div><!-- /.col -->
             </div><!-- /.row -->

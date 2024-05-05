@@ -42,7 +42,11 @@ class Itemlist(models.Model):
         ('4', 'ขายแล้ว')
     )
     item_id  = models.ForeignKey(Products, to_field='product_id', on_delete=models.CASCADE)
-    item_barcode = models.CharField(max_length=20, unique=True)
+    barcode_ean = models.CharField(max_length=20, unique=True)
+    barcode_imei1 = models.CharField(max_length=20, blank=True, null=True)
+    barcode_imei2 = models.CharField(max_length=20, blank=True, null=True)
+    barcode_imei3 = models.CharField(max_length=20, blank=True, null=True)
+    barcode_aup = models.CharField(max_length=20, blank=True, null=True)
     item_regis = models.DateTimeField(auto_now_add=True)
     item_status = models.CharField(max_length=1, choices=status)
     datetime = models.DateTimeField(blank=True, null=True)
@@ -59,7 +63,7 @@ class Itemlist(models.Model):
 # Sell Product
 class SellProduct(models.Model):
     username = models.CharField(max_length=20)
-    barcode = models.ForeignKey(Itemlist, to_field='item_barcode', on_delete=models.CASCADE)
+    barcode = models.ForeignKey(Itemlist, to_field='barcode_ean', on_delete=models.CASCADE)
     count = models.IntegerField(default=1)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     
@@ -70,5 +74,51 @@ class SellProduct(models.Model):
     def __str__(self):
         return self.barcode.item_id.product_name
     
+
+# Topup
+class Topup(models.Model):
+    network = (
+        ('0', 'ไม่มี'),
+        ('1', 'AIS'),
+        ('2', 'DTAC'),
+        ('3', 'TrueMove'),
+        ('4', 'TOT'),
+        ('5', 'CAT')
+    )
+    username = models.CharField(max_length=20)
+    phone_number = models.CharField(max_length=10)
+    network = models.CharField(max_length=1, choices=network)
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+    
+    class Meta:
+        verbose_name = "SellTopup"
+        verbose_name_plural = "Sell Topup"
+        
+    def __str__(self):
+        return self.phone_number
     
 #== End Selling System ==#
+
+#== Members System ==#
+
+# Members
+class Members((models.Model)):
+    sex = (
+        ('1', 'male'),
+        ('2', 'female')
+    )
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    gender = models.CharField(max_length=1, choices=sex)
+    address = models.CharField(max_length=500)
+    phone_number = models.CharField(max_length=10)
+    date_joined = models.DateTimeField(blank=True, null=True)
+    
+    class Meta:
+        verbose_name = "Members"
+        verbose_name_plural = "Members"
+        
+    def __str__(self):
+        return self.first_name
+
+#== Members System ==#

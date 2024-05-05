@@ -11,3 +11,8 @@ admin.site.register(models.Itemlist)
 #== Selling System ==#
 admin.site.register(models.SellProduct)
 #== End Selling System ==#
+
+#== Members System ==#
+admin.site.register(models.Members)
+#== End Members System ==#
+

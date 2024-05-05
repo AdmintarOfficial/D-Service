@@ -79,14 +79,14 @@ href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&d
                     <address>
                         <strong>สมชาย ใจป้ำ</strong><br>
                         680/23 หมู่ 7 ต.กำแพง อ.อุทุมพรพิสัย จ.ศรีสะเกษ
-                        โทร. 0987654321
+                        โทร. -
                     </address>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-4 invoice-col">
                     <b>หมายเลขบิล #{{Billing_Log.id}}</b><br>
                     <br>
-                    <b>คำสั่งซื้อ:</b> {{Billing_Log.sell_id}}<br>
+                    <b>คำสั่งซื้อ:</b> {{Billing_Log.topup_id}}<br>
                     <b>วันที่:</b> {{Billing_Log.datetime}}<br>
                 </div>
                 <!-- /.col -->
@@ -100,9 +100,8 @@ href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&d
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>บาร์โค้ดสินค้า</th>
-                            <th>รายการสินค้า</th>
-                            <th>จำนวน</th>
+                            <th>เบอร์โทร</th>
+                            <th>เครือข่าย</th>
                             <th>ราคา</th>
                         </tr>
                         </thead>
@@ -110,10 +109,9 @@ href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&d
                         {% for bdl in Billing_Detail_Log %}
                         <tr>
                             <td></td>
-                            <td>{{bdl.sell_barcode_id}}</td>
-                            <td>{{bdl.sell_barcode.item_id.product_name}}</td>
-                            <td>1</td>
-                            <td>฿ {{bdl.sell_price}}</td>
+                            <td>{{bdl.phone_number}}</td>
+                            <td>{{bdl.get_network_display}}</td>
+                            <td>฿ {{bdl.price}}</td>
                         </tr>
                         {% endfor %}
                         </tbody>
@@ -150,25 +148,10 @@ href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&d
                                     <th style="width:50%">ราคาสินค้า :</th>
                                     <td>฿ {{Billing_Total_Price_Log}}</td>
                                 </tr>
-
-                                {% if Billing_Log.bill_status == "1" %}
-                                <tr>
-                                    <th>วางดาวน์ :</th>
-                                    <td>฿ {{Billing_Log.down_payment}}</td>
-                                </tr>
                                 <tr>
                                     <th>ค่าบริการ :</th>
                                     <td>฿ {{Billing_Log.fee}}</td>
                                 </tr>
-                                {% endif %}
-
-                                {% if Billing_Log.bill_status == "2" %}
-                                <tr>
-                                    <th>ส่วนลด :</th>
-                                    <td>฿ {{Billing_Log.discount}}</td>
-                                </tr>
-                                {% endif %}
-
                                 <tr>
                                     <th>จำนวนเงินทั้งสิ้น :</th>
                                     <td>฿ {{Billing_Log.total_price}}</td>
@@ -204,7 +187,7 @@ href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&d
                 <!-- this row will not appear when printing -->
                 <div class="row no-print">
                     <div class="col-12">
-                        <a href="{% url 'Invoice-Print' %}?get={{Billing_Log.sell_id}}" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
+                        <a href="{% url 'Invoice-Topup-Print' %}?get={{Billing_Log.topup_id}}" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
                         <a href="{% url 'index' %}" class="btn btn-success float-right"><i class="fas fa-download"></i> จบการขาย</a>
                     </div>
                 </div>

@@ -59,3 +59,41 @@ def Billing_Log(request, value, sell_id):
         return billing_total_price_log
     elif value == 'Billing_Change_Log':
         return change
+    
+# Billing Log
+def BillingTopup_Log(request, value, topup_id):
+    billing_log = models_log.Topup_Log.objects.get(topup_id=topup_id)
+    billing_detail_log = models_log.Topup_Detail_Log.objects.filter(topup_id=topup_id)
+    billing_total_price_log = models_log.Topup_Detail_Log.objects.filter(topup_id=topup_id).aggregate(Sum('price'))['price__sum']
+    
+    change = int(billing_log.cash_money)+int(billing_log.transfer_money)-int(billing_log.total_price)
+    
+    if value == 'Billing_Log':
+        return billing_log
+    elif value == 'Billing_Detail_Log':
+        return billing_detail_log
+    elif value == 'Billing_Total_Price_Log':
+        return billing_total_price_log
+    elif value == 'Billing_Change_Log':
+        return change
+    
+# Cart Topup Check
+def Cart_Topup(request, value, barcode):
+    cart_list = models.Topup.objects.filter(username=request.user.username)
+    total_price = models.Topup.objects.filter(username=request.user.username).aggregate(Sum('price'))['price__sum']
+    
+    if value == 'List':
+        return cart_list
+    elif value == 'Total_Price':
+        return total_price
+    
+    
+# Members
+def Members(request, name):
+    members = models.Members.objects.all()
+    member = models.Members.objects.filter(first_name=name)
+    
+    if name is not None:
+        return member
+    else:
+        return members

@@ -6,3 +6,5 @@ from . import models
 
 admin.site.register(models.Selling_Log)
 admin.site.register(models.Sell_Detail_Log)
+admin.site.register(models.Topup_Log)
+admin.site.register(models.Topup_Detail_Log)
