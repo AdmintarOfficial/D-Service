@@ -1,7 +1,7 @@
 # Header Site
 class Header:
-    title = "TNP-Project" # title website
+    title = "D-Service Shop" # title website
     
 # Footer Site
 class Footer:
-    version = "0.0.4" # Version
+    version = "0.0.5" # Version

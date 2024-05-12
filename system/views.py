@@ -41,6 +41,7 @@ def samsungfinance(request):
             # Add context
             context['Cart'] = objects.Cart(request, 'List', None)
             context['Total_Price'] = objects.Cart(request, 'Total_Price', None)
+            context['Members'] = objects.Members(request, None)
             return render(request, 'SamsungFinance.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')
@@ -70,6 +71,7 @@ def sale(request):
             # Add context
             context['Cart'] = objects.Cart(request, 'List', None)
             context['Total_Price'] = objects.Cart(request, 'Total_Price', None)
+            context['Members'] = objects.Members(request, None)
             return render(request, 'sale.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')    
@@ -106,6 +108,7 @@ def topup(request):
             # Add context
             context['Cart'] = objects.Cart_Topup(request, 'List', None)
             context['Total_Price'] = objects.Cart_Topup(request, 'Total_Price', None)
+            context['Members'] = objects.Members(request, None)
             return render(request, 'topup.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')  
@@ -162,6 +165,23 @@ def invoice_topup_print(request):
         return render(request, 'prints/invoice-topup.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')
+
+# Cancel Bill    
+def cancel_bill(request):
+    if request.user.is_authenticated:
+        if 'ttype' in request.POST:
+            # Add items to cart actions
+            cancel_bill = functions.CancelBilling(request)
+            return HttpResponse(cancel_bill, content_type="application/json")
+        else:
+            # Context Default
+            context = contexts.Context_Default(request)
+            # Add context
+            context['Sell_Log'] = objects.bill_cancel(request, 'Sell_Log')
+            context['Topup_Log'] = objects.bill_cancel(request, 'Topup_Log')
+            return render(request, 'cancen-bill.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')
 #== End sale System ==#
 
 #== Warehouse ==#
@@ -174,6 +194,26 @@ def store(request):
         # Add context
         context['Store'] = objects.store(request, None)
         return render(request, 'store.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')
+    
+# Stock In
+def stockin(request):
+    if request.user.is_authenticated:
+        if 'tget_item' in request.POST:
+            # Add items to cart actions
+            get_item = functions.StockIn(request)
+            return HttpResponse(get_item, content_type="application/json")
+        elif 'tadd_item' in request.POST:
+            # Add items to cart actions
+            add_item = functions.AddProdect(request)
+            return HttpResponse(add_item, content_type="application/json")
+        else:
+            # Context Default
+            context = contexts.Context_Default(request)
+            # Add context
+            context['Product'] = objects.store(request, 'Product')
+            return render(request, 'stockin.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')
     

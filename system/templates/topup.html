@@ -62,8 +62,9 @@
                             <div class="form-group">
                                 <label>สมาชิก :</label>
                                 <select class="select2" id="member" style="width: 100%;">
-                                    <option value="0" selected>ลูกค้าทั่วไป</option>
-                                    <option value="1">สมชาย ใจป้ำ</option>
+                                {% for member in Members %}
+                                    <option value="{{member.id}}">{{member.first_name}} {% if member.last_name %}{{member.last_name}}{% endif %}</option>
+                                {% endfor %}
                                 </select>
                             </div>
                         </div>

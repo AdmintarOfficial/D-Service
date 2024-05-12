@@ -22,7 +22,7 @@ def Datetime_Format(request, value):
     bill_con1 = models_log.Topup_Log.objects.all().count()
     bill_sum = int(bill_con)+int(bill_con1)
     date_now = datetime.now()
-    date_fm = date_now.strftime("%Y%b%a%d")
+    date_fm = date_now.strftime("%Y%m%d")
     billing = str(date_fm)+str(bill_sum)
     
     if value == 'Billing':
@@ -82,22 +82,30 @@ def Logout(request):
 def AddCart(request):
     # Cart form
     barcode = request.POST['tbarcode']
+    sl_barcode = request.POST['tsl_barcode']
     
     if (not barcode):
         return JsonResponse({"status":"N","alertify":"ไม่พบบาร์โค้ด"})
     else:
         # Get Item
-        store = models.Itemlist.objects.filter(barcode_ean=barcode)
+        if sl_barcode == "true":
+            store = models.Itemlist.objects.filter(barcode_ean=barcode)
+        elif sl_barcode == "false":
+            store = models.Itemlist.objects.filter(barcode_aup=barcode)
         
         if not store:
             return JsonResponse({"status":"N","alertify":"ไม่สามารถขายสินค้านี้ได้เนื่องจาก บาร์โค้ดไม่ถูกต้อง"})
         else:
             # Get Item Check
-            item = models.Itemlist.objects.get(barcode_ean=barcode)
+            
+            if sl_barcode == "true":
+                item = models.Itemlist.objects.get(barcode_ean=barcode)
+            elif sl_barcode == "false":
+                item = models.Itemlist.objects.get(barcode_aup=barcode)
             
             if item.item_status == "1":
                 # Check Cart
-                cart_chk = objects.Cart(request, 'Check', barcode)
+                cart_chk = objects.Cart(request, 'Check', item.id)
                 
                 if cart_chk.exists():
                     return JsonResponse({"status":"N","alertify":"สินค้านี้อยู่ในรายการขายแล้ว"})
@@ -105,7 +113,7 @@ def AddCart(request):
                     # Add Items to Cart
                     add_cart = models.SellProduct(
                         username = request.user.username,
-                        barcode_id = barcode,
+                        barcode_id = item.id,
                         price = item.item_id.product_price
                     )
                     if add_cart:
@@ -185,7 +193,7 @@ def SellingProduct(request):
                 # Add Selling Log
                 sell_log = models_log.Selling_Log(
                     sell_id = Datetime_Format(request, 'Billing'),
-                    sell_member = member,
+                    sell_member_id = member,
                     sell_type = ttype,
                     sell_employee = request.user.username,
                     cash_money = cash,
@@ -205,13 +213,13 @@ def SellingProduct(request):
                         
                         models_log.Sell_Detail_Log(
                             sell_id_id = Datetime_Format(request, 'Billing_Detail'),
-                            sell_barcode_id = str(sell.barcode.barcode_ean),
+                            sell_barcode_id = str(sell.barcode_id),
                             sell_price = sell.price
                         ).save()
                         
                     updatestore = models.SellProduct.objects.filter(username=request.user.username)
                     for upstore in updatestore:
-                        models.Itemlist.objects.filter(barcode_ean = str(upstore.barcode.barcode_ean)).update(item_status = 4)
+                        models.Itemlist.objects.filter(id = str(upstore.barcode.id)).update(item_status = 4)
                     
                     DelCart(request, 'Del_All')
                     return JsonResponse({"status":"Y","url":"/ใบเสร็จรับเงิน/?get="+Datetime_Format(request, 'Billing_Detail')})
@@ -252,7 +260,7 @@ def SellingSamsungFinance(request):
                 # Add Selling Log
                 sell_log = models_log.Selling_Log(
                     sell_id = Datetime_Format(request, 'Billing'),
-                    sell_member = member,
+                    sell_member_id = member,
                     sell_type = ttype,
                     sell_employee = request.user.username,
                     cash_money = cash,
@@ -272,13 +280,13 @@ def SellingSamsungFinance(request):
                         
                         models_log.Sell_Detail_Log(
                             sell_id_id = Datetime_Format(request, 'Billing_Detail'),
-                            sell_barcode_id = str(sell.barcode.barcode_ean),
+                            sell_barcode_id = str(sell.barcode_id),
                             sell_price = sell.price
                         ).save()
                         
                     updatestore = models.SellProduct.objects.filter(username=request.user.username)
                     for upstore in updatestore:
-                        models.Itemlist.objects.filter(barcode_ean = str(upstore.barcode.barcode_ean)).update(item_status = 4)
+                        models.Itemlist.objects.filter(id = str(upstore.barcode.id)).update(item_status = 4)
                     
                     DelCart(request, 'Del_All')
                     return JsonResponse({"status":"Y","url":"/ใบเสร็จรับเงิน/?get="+Datetime_Format(request, 'Billing_Detail')})
@@ -365,7 +373,7 @@ def SellingTopup(request):
             if cart_chk:
                 topup_log = models_log.Topup_Log(
                     topup_id = Datetime_Format(request, 'Billing'),
-                    topup_member = member,
+                    topup_member_id = member,
                     topup_type = 1,
                     topup_employee = request.user.username,
                     cash_money = cash,
@@ -393,3 +401,100 @@ def SellingTopup(request):
                     return JsonResponse({"status":"Y","url":"/ใบเสร็จรับเงิน-เติมเงิน/?get="+Datetime_Format(request, 'Billing_Detail')})
             else:
                 return JsonResponse({"status":"N","alertify":"ไม่พบข้อมูลในรายการขายสินค้า"})
+            
+# Cancel Billing
+def CancelBilling(request):
+    # Billing form
+    bill_type = request.POST['ttype']
+    bill_id = request.POST['tid']
+    
+    if bill_type == "sell":
+        # Selling Detail Log
+        sell_detail_log = models_log.Sell_Detail_Log.objects.filter(sell_id=bill_id)
+        for sell in sell_detail_log:
+            models.Itemlist.objects.filter(id=sell.sell_barcode.id).update(item_status=1)
+            
+        # Selling Log
+        cancel_bill = models_log.Selling_Log.objects.filter(sell_id=bill_id).update(active=False)
+        if cancel_bill:
+            return JsonResponse({"status":"Y","url":"/ยกเลิกบิล/"})
+        else:
+            return JsonResponse({"status":"N","alertify":"เกิดข้อผิดพลาดขณะบันทึกข้อมูล"})
+    elif bill_type == "topup":
+        # Topup Log
+        cancel_topup = models_log.Topup_Log.objects.filter(topup_id=bill_id).update(active=False)
+        if cancel_topup:
+            return JsonResponse({"status":"Y","url":"/ยกเลิกบิล/"})
+        else:
+            return JsonResponse({"status":"N","alertify":"เกิดข้อผิดพลาดขณะบันทึกข้อมูล"})
+    else:
+        return JsonResponse({"status":"N","alertify":"ไม่พบข้อมูลบิลใบเสร็จ"})
+    
+# Stock IN
+def StockIn(request):
+    # StockIn form
+    product_id = request.POST['tproduct_id']
+    bc_ean = request.POST['tbc_ean']
+    bc_aup = request.POST['tbc_aup']
+    imei1 = request.POST['timei1']
+    imei2 = request.POST['timei2']
+    imei3 = request.POST['timei3']
+    
+    if (not product_id) or (not bc_ean):
+        return JsonResponse({"status":"N","alertify":"โปรดเลือกสินค้าที่ต้องการรับเข้าและสแกนบาร์โค้ดสินค้า"})
+    else:
+        # Check Store
+        store = models.Itemlist.objects.filter(barcode_aup=bc_aup)
+        
+        if store:
+            return JsonResponse({"status":"N","alertify":"บาร์โค้ดแอดไวซ์ซ้ำกับสินค้าในคลัง"})
+        else:
+            add_item = models.Itemlist(
+                item_id_id = product_id,
+                barcode_ean = bc_ean,
+                barcode_imei1 = imei1,
+                barcode_imei2 = imei2,
+                barcode_imei3 = imei3,
+                barcode_aup = bc_aup,
+                item_status = 1
+            )
+            if add_item:
+                # Save Item
+                add_item.save()
+                return JsonResponse({"status":"Y","url":"/รับสินค้า/"})
+            else:
+                return JsonResponse({"status":"N","alertify":"เกิดข้อผิดพลาดขณะบันทึกข้อมูล"})
+            
+# Add Product
+def AddProdect(request):
+    # Add Product form
+    item_name = request.POST['titem_name']
+    item_id = request.POST['titem_id']
+    item_price = request.POST['titem_price']
+    item_network = request.POST['titem_network']
+    item_type = request.POST['titem_type']
+    
+    if (not item_name) or (not item_id) or (not item_price) or (not item_network) or (not item_type):
+        return JsonResponse({"status":"N","alertify":"โปรดกรอกข้อมูลให้ครบทุกช่อง"})
+    else:
+        # Check Store
+        store = models.Products.objects.filter(product_id=item_id)
+        
+        if store:
+            return JsonResponse({"status":"N","alertify":"มีรหัสสินค้านี้ในคลังสินค้า"})
+        else:
+            add_product = models.Products(
+                product_id = item_id,
+                product_name = item_name,
+                product_network = item_network,
+                product_price = item_price,
+                product_type = item_type
+            )
+            if add_product:
+                # Save Item
+                add_product.save()
+                return JsonResponse({"status":"Y","url":"/รับสินค้า/"})
+            else:
+                return JsonResponse({"status":"N","alertify":"เกิดข้อผิดพลาดขณะบันทึกข้อมูล"})
+    
+                

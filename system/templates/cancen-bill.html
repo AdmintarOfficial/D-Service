@@ -1,0 +1,182 @@
+{% extends 'layout/home.html' %}
+
+{% load static %}
+
+{% block page_title %}ยกเลิกบิล | {{Configs.Header.title}}{% endblock %}
+{% block page_path %}ยกเลิกบิล{% endblock %}
+
+{% block page_css %}
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+<!-- DataTables -->
+<link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+<!-- Toastr -->
+<link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
+<!-- Theme style -->
+<link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+{% endblock %}
+
+{% block page_js %}
+<!-- jQuery -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- DataTables  & Plugins -->
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+<!-- Toastr -->
+<script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{% static 'dist/js/demo.js' %}"></script>
+<!-- Ajax Call -->
+<script src="{% static 'dist/js/ajax.min.js' %}"></script>
+<script>
+    $(function () {
+        $("#example1").DataTable({
+        "responsive": true, "lengthChange": false, "autoWidth": false,
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+        $('#example2').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": false,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<section class="content">
+    <div class="card">
+        <!-- /.card-header -->
+        <div class="card-body">
+          <table id="example1" class="table table-bordered table-striped">
+            <thead>
+            <tr>
+              <th style="width: 60px">#</th>
+              <th>คำสั่งซื้อ</th>
+              <th>ลูกค้า</th>
+              <th>ยอดขาย</th>
+              <th>วันที่</th>
+              <th>ประเภท</th>
+              <th>สถานะ</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for bill in Sell_Log %}
+            <tr>
+              <td>
+                <form name="delidform">
+                  {% csrf_token %}
+                  <div class="modal fade" id="modal-bill-{{bill.id}}">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h4 class="modal-title">ยกเลิกบิล ={{bill.sell_id}}=</h4>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <p>เมื่อกด "ยืนยัน" สินค้าทั้งหมดในบิลนี้จะคืนกลับเข้าสู่คลังสินค้า</p>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
+                          <input type="hidden" id="type-{{bill.sell_id}}" value="sell">
+                          <button type="button" id="cancel-bill" class="btn btn-primary" OnClick="JavaScript:doCallCancelBill({{bill.sell_id}});">ยืนยัน</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+                  <button type="button" class="btn btn-danger btn-sm {% if bill.active == False %}disabled{% endif %}" {% if bill.active == True %}data-toggle="modal" data-target="#modal-bill-{{bill.id}}"{% endif %}>ยกเลิกบิล</button>
+              </form>
+              </td>
+              <td><a href="{% url 'Invoice' %}?get={{bill.sell_id}}" rel="noopener" target="_blank" >{{bill.sell_id}}</a></td>
+              <td>{{bill.sell_member.first_name}} {% if bill.sell_member.last_name %}{{bill.sell_member.last_name}}{% endif %}</td>
+              <td>{{bill.total_price}}</td>
+              <td>{{bill.datetime}}</td>
+              <td>{{bill.get_bill_status_display}}</td>
+              <td>{% if bill.active == True %}<font color="#00ff00">สำเร็จ</font>{% else %}<font color="#FF0000">ยกเลิก</font>{% endif %}</td>
+            </tr>
+            {% endfor %}
+            {% for bill_topup in Topup_Log %}
+            <tr>
+              <td>
+                <form name="delidform">
+                  {% csrf_token %}
+                  <div class="modal fade" id="modal-topup-{{bill_topup.id}}">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h4 class="modal-title">ยกเลิกบิล ={{bill_topup.topup_id}}=</h4>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <p>เมื่อกด "ยืนยัน" ยอดขายจากบิลนี้จะไม่ถูกนับ</p>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
+                          <input type="hidden" id="type-{{bill_topup.topup_id}}" value="topup">
+                          <button type="button" id="cancel-bill" class="btn btn-primary" OnClick="JavaScript:doCallCancelBill({{bill_topup.topup_id}});">ยืนยัน</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+                  <button type="button" class="btn btn-danger btn-sm {% if bill_topup.active == False %}disabled{% endif %}" data-toggle="modal" data-target="#modal-topup-{{bill_topup.id}}">ยกเลิกบิล</button>
+                </form>
+              </td>
+              <td><a href="{% url 'Invoice-Topup' %}?get={{bill_topup.topup_id}}" rel="noopener" target="_blank" >{{bill_topup.topup_id}}</a></td>
+              <td>{{bill_topup.topup_member.first_name}} {{bill_topup.topup_member.last_name}}</td>
+              <td>{{bill_topup.total_price}}</td>
+              <td>{{bill_topup.datetime}}</td>
+              <td>เติมเงิน</td>
+              <td>{% if bill_topup.active == True %}<font color="#00ff00">สำเร็จ</font>{% else %}<font color="#FF0000">ยกเลิก</font>{% endif %}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+
+            <tfoot>
+            <!--tr>
+                <th>รหัสสินค้า</th>
+                <th>่บาร์โค้ด</th>
+                <th>ชื่อสินค้า</th>
+                <th>ราคาขาย</th>
+                <th>คงเหลือ</th>
+            </tr-->
+            </tfoot>
+          </table>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+</section>
+{% endblock %}

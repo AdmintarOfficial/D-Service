@@ -41,12 +41,12 @@ class Itemlist(models.Model):
         ('3', 'โอนออก'),
         ('4', 'ขายแล้ว')
     )
-    item_id  = models.ForeignKey(Products, to_field='product_id', on_delete=models.CASCADE)
-    barcode_ean = models.CharField(max_length=20, unique=True)
-    barcode_imei1 = models.CharField(max_length=20, blank=True, null=True)
-    barcode_imei2 = models.CharField(max_length=20, blank=True, null=True)
-    barcode_imei3 = models.CharField(max_length=20, blank=True, null=True)
-    barcode_aup = models.CharField(max_length=20, blank=True, null=True)
+    item_id  = models.ForeignKey(Products, on_delete=models.CASCADE)
+    barcode_ean = models.CharField(max_length=20, blank=True, null=True)
+    barcode_imei1 = models.CharField(max_length=20, blank=True, null=True, unique=True)
+    barcode_imei2 = models.CharField(max_length=20, blank=True, null=True, unique=True)
+    barcode_imei3 = models.CharField(max_length=20, blank=True, null=True, unique=True)
+    barcode_aup = models.CharField(max_length=20, blank=True, null=True, unique=True)
     item_regis = models.DateTimeField(auto_now_add=True)
     item_status = models.CharField(max_length=1, choices=status)
     datetime = models.DateTimeField(blank=True, null=True)
@@ -63,7 +63,7 @@ class Itemlist(models.Model):
 # Sell Product
 class SellProduct(models.Model):
     username = models.CharField(max_length=20)
-    barcode = models.ForeignKey(Itemlist, to_field='barcode_ean', on_delete=models.CASCADE)
+    barcode = models.ForeignKey(Itemlist, on_delete=models.CASCADE)
     count = models.IntegerField(default=1)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     
@@ -107,12 +107,12 @@ class Members((models.Model)):
         ('1', 'male'),
         ('2', 'female')
     )
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    gender = models.CharField(max_length=1, choices=sex)
-    address = models.CharField(max_length=500)
-    phone_number = models.CharField(max_length=10)
-    date_joined = models.DateTimeField(blank=True, null=True)
+    first_name = models.CharField(max_length=50, blank=True, null=True)
+    last_name = models.CharField(max_length=50, blank=True, null=True)
+    gender = models.CharField(max_length=1, choices=sex, blank=True, null=True)
+    address = models.CharField(max_length=500, blank=True, null=True)
+    phone_number = models.CharField(max_length=10, blank=True, null=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name = "Members"

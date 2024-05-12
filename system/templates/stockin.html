@@ -1,0 +1,239 @@
+{% extends 'layout/home.html' %}
+
+{% load static %}
+
+{% block page_title %}รับสินค้า | {{Configs.Header.title}}{% endblock %}
+{% block page_path %}รับสินค้า{% endblock %}
+
+{% block page_css %}
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- daterange picker -->
+  <link rel="stylesheet" href="{% static 'plugins/daterangepicker/daterangepicker.css' %}">
+  <!-- iCheck for checkboxes and radio inputs -->
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <!-- Bootstrap Color Picker -->
+  <link rel="stylesheet" href="{% static 'plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css' %}">
+  <!-- Tempusdominus Bootstrap 4 -->
+  <link rel="stylesheet" href="{% static 'plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{% static 'plugins/select2/css/select2.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+  <!-- Bootstrap4 Duallistbox -->
+  <link rel="stylesheet" href="{% static 'plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css' %}">
+  <!-- BS Stepper -->
+  <link rel="stylesheet" href="{% static 'plugins/bs-stepper/css/bs-stepper.min.css' %}">
+  <!-- dropzonejs -->
+  <link rel="stylesheet" href="{% static 'plugins/dropzone/min/dropzone.min.css' %}">
+  <!-- Toastr -->
+<link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+{% endblock %}
+
+{% block page_js %}
+<!-- jQuery -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+<!-- Bootstrap4 Duallistbox -->
+<script src="{% static 'plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
+<!-- InputMask -->
+<script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+<script src="{% static 'plugins/inputmask/jquery.inputmask.min.js' %}"></script>
+<!-- date-range-picker -->
+<script src="{% static 'plugins/daterangepicker/daterangepicker.js' %}"></script>
+<!-- bootstrap color picker -->
+<script src="{% static 'plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js' %}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+<!-- Bootstrap Switch -->
+<script src="{% static 'plugins/bootstrap-switch/js/bootstrap-switch.min.js' %}"></script>
+<!-- BS-Stepper -->
+<script src="{% static 'plugins/bs-stepper/js/bs-stepper.min.js' %}"></script>
+<!-- dropzonejs -->
+<script src="{% static 'plugins/dropzone/min/dropzone.min.js' %}"></script>
+<!-- Toastr -->
+<script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{% static 'dist/js/demo.js' %}"></script>
+<!-- Ajax Call -->
+<script src="{% static 'dist/js/ajax.min.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<section class="content">
+  <div class="container-fluid">
+
+    <div class="card card-default collapsed-card">
+      <div class="card-header">
+        <h3 class="card-title">เพิ่มรายการสินค้า</h3>
+
+        <div class="card-tools">
+          <button type="button" class="btn btn-tool" data-card-widget="collapse">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body">
+        
+        <form name="AddProductform">
+          <div class="row">
+
+            <div class="col-6">
+              <div class="form-group">
+                  <label>ชื่อสินค้า :</label>
+                  <input type="text" class="form-control" id="item_name" placeholder="ชื่อสินค้า">
+              </div>
+            </div>
+
+            <div class="col-3">
+              <div class="form-group">
+                  <label>รหัสสินค้า :</label>
+                  <input type="text" class="form-control" id="item_id" placeholder="รหัสสินค้า">
+              </div>
+            </div>
+
+            <div class="col-3">
+              <div class="form-group">
+                  <label>ราคาขาย :</label>
+                  <input type="text" class="form-control" id="item_price" placeholder="ราคาขาย">
+              </div>
+            </div>
+
+            <div class="col-3">
+              <div class="form-group">
+                  <label>เลือกเครือค่าย :</label>
+                  <select class="form-control select2" id="item_network" style="width: 100%;">
+                    <option value="0">ไม่มี</option>
+                    <option value="1">AIS</option>
+                    <option value="2">DTAC</option>
+                    <option value="3">TrueMove</option>
+                    <option value="4">TOT</option>
+                    <option value="5">CAT</option>
+                  </select>
+              </div>
+            </div>
+
+            <div class="col-3">
+              <div class="form-group">
+                  <label>เลือกประเภท :</label>
+                  <select class="form-control select2" id="item_type" style="width: 100%;">
+                    <option value="1">สมาร์ทโฟน</option>
+                    <option value="2">แท็บเล็ต</option>
+                    <option value="3">ซิม</option>
+                    <option value="4">อุปกรณ์เสริม</option>
+                  </select>
+              </div>
+            </div>
+
+            <div class="col-3 float-right">
+              <div class="form-group">
+              </div>
+            </div>
+            
+            <div class="col-3 float-right">
+              <div class="form-group">
+                <label>โปรดตรวจสอบความถูกต้อง</label>
+                {% csrf_token %}
+                <button type="button" id="add_item" class="btn btn-block btn-success" OnClick="JavaScript:doCallAddProduct();"><i class="fas fa-edit"></i> เพิ่มสินค้า</button>
+              </div>
+            </div>
+              
+          </div>
+
+        </form>
+
+      </div>
+      <!-- /.card-body -->
+
+    </div>
+    <!-- /.card -->
+
+    <!-- SELECT2 EXAMPLE -->
+    <div class="card card-default collapsed-card">
+      <div class="card-header">
+        <h3 class="card-title">รับสินค้าเข้าคลัง</h3>
+
+        <div class="card-tools">
+          <button type="button" class="btn btn-tool" data-card-widget="collapse">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body">
+        
+        <form name="StockInform">
+          <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label>เลือกสินค้า :</label>
+                    <select class="form-control select2" id="product_id" style="width: 100%;">
+                    {% for product in Product %}
+                      <option value="{{product.id}}">{{product.product_name}}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label>Barcode EAN :</label>
+                    <input type="text" class="form-control" id="bc_ean" placeholder="บาร์โค้ดสินค้า">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label>Barcode AUP :</label>
+                    <input type="text" class="form-control" id="bc_aup" placeholder="บาร์โค้ดแอดไวซ์ (ถ้ามี)">
+                </div>
+            </div>
+
+            <div class="col-4">
+              <div class="form-group">
+                  <label>IMEI1 :</label>
+                  <input type="text" class="form-control" id="imei1" placeholder="IMEI1 (ถ้ามี)">
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="form-group">
+                  <label>IMEI2 :</label>
+                  <input type="text" class="form-control" id="imei2" placeholder="IMEI2 (ถ้ามี)">
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="form-group">
+                  <label>IMEI3 :</label>
+                  <input type="text" class="form-control" id="imei3" placeholder="IMEI3 (ถ้ามี)">
+              </div>
+            </div>
+
+            <div class="col-2">
+              <div class="form-group">
+                {% csrf_token %}
+                <button type="button" id="get_item" class="btn btn-block btn-success" OnClick="JavaScript:doCallStockIn();"><i class="fas fa-inbox"></i> รับสินค้า</button>
+              </div>
+            </div>
+              
+          </div>
+
+        </form>
+
+      </div>
+      <!-- /.card-body -->
+
+    </div>
+    <!-- /.card -->
+
+  </div>
+</section>
+{% endblock %}

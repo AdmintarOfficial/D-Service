@@ -29,7 +29,7 @@ def store(request, value):
 
 # Cart Check
 def Cart(request, value, barcode):
-    cart_chk = models.SellProduct.objects.filter(barcode=barcode)
+    cart_chk = models.SellProduct.objects.filter(barcode_id=barcode)
     cart_list = models.SellProduct.objects.filter(username=request.user.username)
     total_price = models.SellProduct.objects.filter(username=request.user.username).aggregate(Sum('price'))['price__sum']
     total_count = models.SellProduct.objects.filter(username=request.user.username).aggregate(Sum('count'))['count__sum']
@@ -87,10 +87,19 @@ def Cart_Topup(request, value, barcode):
     elif value == 'Total_Price':
         return total_price
     
+# Billing Cancel
+def bill_cancel(request, value):
+    sell = models_log.Selling_Log.objects.filter(datetime__date=timezone.now().date())
+    topup = models_log.Topup_Log.objects.filter(datetime__date=timezone.now().date())
+    
+    if value == 'Sell_Log':
+        return sell
+    elif value == 'Topup_Log':
+        return topup
     
 # Members
 def Members(request, name):
-    members = models.Members.objects.all()
+    members = models.Members.objects.all().order_by('pk')
     member = models.Members.objects.filter(first_name=name)
     
     if name is not None:

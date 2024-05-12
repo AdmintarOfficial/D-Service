@@ -2,16 +2,26 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ใบเสร็จรับเงิน | {{Configs.Header.title}}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ใบเสร็จรับเงิน | {{Configs.Header.title}}</title>
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+    <style>
+        .get_money {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 10%;
+        }
+    </style>
 </head>
 <body>
 <div class="wrapper">
@@ -38,7 +48,7 @@
                     <!-- info row -->
                     <div class="row invoice-info">
                         <div class="col-sm-4 invoice-col">
-                            ร้าน
+                            <b>ร้าน</b>
                             <address>
                             <strong>ดี เซอร์วิส</strong><span class="text-muted well well-sm shadow-none"> (เทสโก้โลตัส อุทุมพรพิสัย)</span><br>
                             95 หมู่ 2 ต.กำแพง อ.อุทุมพรพิสัย จ.ศรีสะเกษ<br>
@@ -47,24 +57,26 @@
                         </div>
                         <!-- /.col -->
                     <div class="col-sm-4 invoice-col">
-                        ลูกค้า
+                        <b>ลูกค้า</b>
                         <address>
-                            <strong>สมชาย ใจป้ำ</strong><br>
-                            680/23 หมู่ 7 ต.กำแพง อ.อุทุมพรพิสัย จ.ศรีสะเกษ
-                            โทร. -
+                            <strong>{{Billing_Log.sell_member.first_name}} {% if Billing_Log.sell_member.last_name %}{{Billing_Log.sell_member.last_name}}{% endif %}</strong><br>
+                            {% if Billing_Log.sell_member.address and Billing_Log.sell_member.phone_number %}
+                            {{Billing_Log.sell_member.address}}<br>
+                            โทร. {{Billing_Log.sell_member.phone_number}}
+                            {% endif %}
                         </address>
                     </div>
                     <!-- /.col -->
                     <div class="col-sm-4 invoice-col">
-                        <b>หมายเลขบิล #{{Billing_Log.id}}</b><br>
-                        <br>
+                        <b>หมายเลขบิล</b> #{{Billing_Log.id}}<br>
+                        <b>พนักงาน:</b> {{Billing_Log.sell_employee}}<br>
                         <b>คำสั่งซื้อ:</b> {{Billing_Log.sell_id}}<br>
                         <b>วันที่:</b> {{Billing_Log.datetime}}<br>
                     </div>
                     <!-- /.col -->
                     </div>
                     <!-- /.row -->
-    
+                    <br>
                     <!-- Table row -->
                     <div class="row">
                     <div class="col-12 table-responsive">
@@ -82,7 +94,7 @@
                             {% for bdl in Billing_Detail_Log %}
                             <tr>
                                 <td></td>
-                                <td>{{bdl.sell_barcode_id}}</td>
+                                <td>{{bdl.sell_barcode.barcode_ean}}</td>
                                 <td>{{bdl.sell_barcode.item_id.product_name}}</td>
                                 <td>1</td>
                                 <td>฿ {{bdl.sell_price}}</td>
@@ -98,7 +110,7 @@
                     <div class="row">
                         <!-- accepted payments column -->
                         <div class="col-6">
-                            <p class="lead">นโยบายการชำระเงิน:</p>
+                            <p class="lead">นโยบายการชำระเงิน</p>
     
                             <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
                                 ร้าน <b>ดี เซอร์วิส</b> ไม่มีนโยบายโอนเงินเข้าบัญชีธนาคารของพนักงานขาย<br>
@@ -152,14 +164,18 @@
     
                             <div class="table-responsive">
                                 <table class="table">
+                                {% if Billing_Log.cash_money > 0 %}
                                     <tr>
                                         <th style="width:50%">เงินสด :</th>
                                         <td>฿ {{Billing_Log.cash_money}}</td>
                                     </tr>
+                                {% endif %}
+                                {% if Billing_Log.transfer_money > 0 %}
                                     <tr>
                                         <th>เงินโอน :</th>
                                         <td>฿ {{Billing_Log.transfer_money}}</td>
                                     </tr>
+                                {% endif %}
                                     <tr>
                                         <th>เงินทอน :</th>
                                         <td>฿ {{Billing_Change_Log}}</td>
@@ -169,7 +185,7 @@
     
                         </div>
                         <!-- /.col -->
-                        <div class="main-footer"></div>
+
                     </div>
                     <!-- /.row -->
                 </div>
@@ -178,6 +194,35 @@
             </div><!-- /.row -->
         </div><!-- /.container-fluid -->
     </section>
+
+    <table class="get_money">
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        <tr>
+            <th><hr width="200"></th>
+            <th></th>
+            <th><hr width="200"></th>
+        </tr>
+        <tr>
+            <th>ผู้รับเงิน</th>
+            <th></th>
+            <th>ผู้รับสินค้า</th>
+        </tr>
+        <tr>
+            <th><br></th>
+            <th><br></th>
+            <th><br></th>
+        </tr>
+        <tr>
+            <th>_____/_____/_____</th>
+                <th></th>
+            <th>_____/_____/_____</th>
+        </tr>
+    </table>
+
     <!-- /.content -->
 </div>
 <!-- ./wrapper -->

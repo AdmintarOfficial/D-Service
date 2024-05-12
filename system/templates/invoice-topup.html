@@ -77,22 +77,24 @@ href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&d
                 <div class="col-sm-4 invoice-col">
                     ลูกค้า
                     <address>
-                        <strong>สมชาย ใจป้ำ</strong><br>
-                        680/23 หมู่ 7 ต.กำแพง อ.อุทุมพรพิสัย จ.ศรีสะเกษ
-                        โทร. -
+                        <strong>{{Billing_Log.topup_member.first_name}} {% if Billing_Log.topup_member.last_name %}{{Billing_Log.topup_member.last_name}}{% endif %}</strong><br>
+                        {% if Billing_Log.topup_member.address and Billing_Log.topup_member.phone_number %}
+                        {{Billing_Log.topup_member.address}}<br>
+                        โทร. {{Billing_Log.topup_member.phone_number}}
+                        {% endif %}
                     </address>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-4 invoice-col">
                     <b>หมายเลขบิล #{{Billing_Log.id}}</b><br>
-                    <br>
+                    <b>พนักงาน:</b> {{Billing_Log.topup_employee}}<br>
                     <b>คำสั่งซื้อ:</b> {{Billing_Log.topup_id}}<br>
                     <b>วันที่:</b> {{Billing_Log.datetime}}<br>
                 </div>
                 <!-- /.col -->
                 </div>
                 <!-- /.row -->
-
+                <br>
                 <!-- Table row -->
                 <div class="row">
                 <div class="col-12 table-responsive">
@@ -124,7 +126,7 @@ href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&d
                 <div class="row">
                     <!-- accepted payments column -->
                     <div class="col-6">
-                        <p class="lead">นโยบายการชำระเงิน:</p>
+                        <p class="lead">นโยบายการชำระเงิน</p>
 
                         <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
                             ร้าน <b>ดี เซอร์วิส</b> ไม่มีนโยบายโอนเงินเข้าบัญชีธนาคารของพนักงานขาย<br>
@@ -163,14 +165,18 @@ href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&d
 
                         <div class="table-responsive">
                             <table class="table">
+                            {% if Billing_Log.cash_money > 0 %}
                                 <tr>
                                     <th style="width:50%">เงินสด :</th>
                                     <td>฿ {{Billing_Log.cash_money}}</td>
                                 </tr>
+                            {% endif %}
+                            {% if Billing_Log.transfer_money > 0 %}
                                 <tr>
                                     <th>เงินโอน :</th>
                                     <td>฿ {{Billing_Log.transfer_money}}</td>
                                 </tr>
+                            {% endif %}
                                 <tr>
                                     <th>เงินทอน :</th>
                                     <td>฿ {{Billing_Change_Log}}</td>

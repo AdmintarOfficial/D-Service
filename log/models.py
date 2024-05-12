@@ -18,7 +18,7 @@ class Selling_Log(models.Model):
         ('2', 'ขายสินค้า')
     )
     sell_id = models.CharField(max_length=20, unique=True)
-    sell_member = models.CharField(max_length=100)
+    sell_member = models.ForeignKey(System_db.Members, on_delete=models.CASCADE, blank=True, null=True)
     sell_type = models.CharField(max_length=1, choices=type)
     sell_employee = models.CharField(max_length=100)
     cash_money = models.DecimalField(max_digits=8, decimal_places=2)
@@ -29,6 +29,7 @@ class Selling_Log(models.Model):
     total_price = models.DecimalField(max_digits=8, decimal_places=2)
     datetime = models.DateTimeField(auto_now_add=True)
     bill_status = models.CharField(max_length=1, choices=status)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Selling_Log"
@@ -40,7 +41,7 @@ class Selling_Log(models.Model):
 # Selling Detail Log
 class Sell_Detail_Log(models.Model):
     sell_id = models.ForeignKey(Selling_Log, to_field='sell_id', on_delete=models.CASCADE)
-    sell_barcode = models.ForeignKey(System_db.Itemlist, to_field='barcode_ean', on_delete=models.CASCADE)
+    sell_barcode = models.ForeignKey(System_db.Itemlist, on_delete=models.CASCADE)
     sell_count = models.IntegerField(default=1)
     sell_price = models.DecimalField(max_digits=8, decimal_places=2)
     
@@ -59,7 +60,7 @@ class Topup_Log(models.Model):
         ('3', 'จัดส่ง')
     )
     topup_id = models.CharField(max_length=20, unique=True)
-    topup_member = models.CharField(max_length=100)
+    topup_member = models.ForeignKey(System_db.Members, on_delete=models.CASCADE, blank=True, null=True)
     topup_type = models.CharField(max_length=1, choices=type)
     topup_employee = models.CharField(max_length=100)
     cash_money = models.DecimalField(max_digits=8, decimal_places=2)
@@ -68,6 +69,7 @@ class Topup_Log(models.Model):
     discount = models.DecimalField(max_digits=8, decimal_places=2)
     total_price = models.DecimalField(max_digits=8, decimal_places=2)
     datetime = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
     
     class Meta:
         verbose_name = "Topup_Log"

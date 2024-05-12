@@ -154,7 +154,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="index3.html" class="brand-link">
+            <a href="{% url 'index' %}" class="brand-link">
                 <img src="{% static 'dist/img/Dservice-Logo.png' %}" alt="D-Service Logo" class="brand-image img-circle elevation-3"
                     style="opacity: .8">
                 <span class="brand-text font-weight-light">Service</span>
@@ -220,6 +220,12 @@
                                         <p>เติมเงินออนไลน์</p>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="{% url 'Cancel-Bill' %}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>ยกเลิกบิล</p>
+                                    </a>
+                                </li>
 
                                 <!--
                                 <li class="nav-item">
@@ -262,7 +268,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{% url 'Product-Add' %}" class="nav-link">
+                                    <a href="{% url 'Stock-In' %}" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>รับสินค้า</p>
                                     </a>
