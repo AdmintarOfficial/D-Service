@@ -1,6 +1,7 @@
 {% extends 'layout/home.html' %}
 
 {% load static %}
+{% load humanize %}
 
 {% block page_title %}ยกเลิกบิล | {{Configs.Header.title}}{% endblock %}
 {% block page_path %}ยกเลิกบิล{% endblock %}
@@ -117,7 +118,7 @@
               </td>
               <td><a href="{% url 'Invoice' %}?get={{bill.sell_id}}" rel="noopener" target="_blank" >{{bill.sell_id}}</a></td>
               <td>{{bill.sell_member.first_name}} {% if bill.sell_member.last_name %}{{bill.sell_member.last_name}}{% endif %}</td>
-              <td>{{bill.total_price}}</td>
+              <td>{{bill.total_price|intcomma}}</td>
               <td>{{bill.datetime}}</td>
               <td>{{bill.get_bill_status_display}}</td>
               <td>{% if bill.active == True %}<font color="#00ff00">สำเร็จ</font>{% else %}<font color="#FF0000">ยกเลิก</font>{% endif %}</td>
@@ -155,8 +156,8 @@
                 </form>
               </td>
               <td><a href="{% url 'Invoice-Topup' %}?get={{bill_topup.topup_id}}" rel="noopener" target="_blank" >{{bill_topup.topup_id}}</a></td>
-              <td>{{bill_topup.topup_member.first_name}} {{bill_topup.topup_member.last_name}}</td>
-              <td>{{bill_topup.total_price}}</td>
+              <td>{{bill_topup.topup_member.first_name}} {% if bill_topup.topup_member.last_name %}{{bill_topup.topup_member.last_name}}{% endif %}</td>
+              <td>{{bill_topup.total_price|intcomma}}</td>
               <td>{{bill_topup.datetime}}</td>
               <td>เติมเงิน</td>
               <td>{% if bill_topup.active == True %}<font color="#00ff00">สำเร็จ</font>{% else %}<font color="#FF0000">ยกเลิก</font>{% endif %}</td>

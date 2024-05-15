@@ -1,6 +1,7 @@
 {% extends 'layout/home.html' %}
 
 {% load static %}
+{% load humanize %}
 
 {% block page_title %}เช็คสต๊อก | {{Configs.Header.title}}{% endblock %}
 {% block page_path %}เช็คสต๊อก{% endblock %}
@@ -13,6 +14,8 @@
 <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
 <!-- Theme style -->
 <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+<!-- Toastr -->
+<link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
 {% endblock %}
 
 {% block page_js %}
@@ -23,8 +26,22 @@
 <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <!-- AdminLTE App -->
 <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+<!-- Toastr -->
+<script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{% static 'dist/js/demo.js' %}"></script>
+<!-- Ajax Call -->
+<script src="{% static 'dist/js/ajax.min.js' %}"></script>
+<script>
+    var input = document.getElementById("barcode");
+        input.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("check_stock").click();
+            document.getElementById("CheckStockform").reset();
+        }
+    });
+</script>
 {% endblock %}
 
 {% block content %}
@@ -34,57 +51,94 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
+
                     <div class="card-header">
-                        <h3 class="card-title"></h3>
-
                         <div class="card-tools">
-                            <div class="input-group input-group-sm" style="width: 300px;">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-barcode"></i>
-                                    </span>
-                                </div>
-                                <input type="text" name="table_search" class="form-control float-right" placeholder="สแกนบาร์โค้ด">
+                            <form id="CheckStockform">
+                                <div class="input-group input-group-sm" style="width:500px;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="sl_barcode" value="ean">
+                                        <label class="form-check-label">EAN</label>
+                                        <label style="width:30px;"></label>
+                                        <input class="form-check-input" type="radio" name="sl_barcode" value="aup" checked>
+                                        <label class="form-check-label">AUP</label>
+                                        <label style="width:20px;"></label>
+                                    </div>
+                                    
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-barcode"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" id="barcode" class="form-control float-right" placeholder="สแกนบาร์โค้ด" autofocus>
 
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-default">
-                                        <i class="fas fa-check"></i>
-                                    </button>
+                                    <div class="input-group-append">
+                                        {% csrf_token %}
+                                        <button type="button" id="check_stock" class="btn btn-default" OnClick="JavaScript:doCallCheckStock();"><i class="fas fa-check"></i></button>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>    
                         </div>
                     </div>
                     <!-- /.card-header -->
-                    <div class="card-body table-responsive p-0" style="height: 300px;">
+                    <div class="col-12 table-responsive p-0" style="height: 300px;">
                         <table class="table table-head-fixed text-nowrap">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>รหัสสินค้า</th>
-                                    <th>บาร์โค้ด</th>
+                                    <th>บาร์โค้ดสินค้า</th>
+                                    <th>บาร์โค้ดแอดไวซ์</th>
                                     <th>ชื่อสินค้า</th>
-                                    <th>จำนวน</th>
+                                    <th>ราคาขาย</th>
+                                    <th>ประเภท</th>
+                                    <th>วันที่รับเข้า</th>
                                 </tr>
                             </thead>
                             <tbody>
+                            {% if Stock %}
+                                {% for item in Stock %}
                                 <tr>
-                                    <td>1</td>
-                                    <td>D46546544</td>
-                                    <td>484654646554</td>
-                                    <td>Approved</td>
-                                    <td>1</td>
+                                    <td>{{item.barcode.barcode_ean}}</td>
+                                    <td>{{item.barcode.barcode_aup}}</td>
+                                    <td>{{item.barcode.item_id.product_name}}</td>
+                                    <td>{{item.price|intcomma}}</td>
+                                    <td>{{item.barcode.item_id.get_product_type_display}}</td>
+                                    <td>{{item.barcode.item_regis}}</td>
                                 </tr>
-                                <tr>
-                                    <td>1</td>
-                                    <td>D46546544</td>
-                                    <td>484654646554</td>
-                                    <td>Approved</td>
-                                    <td>1</td>
-                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td colspan="6" style="text-align:center;">{% if Check_Stock %}ครบแล้ว{% else %}ยังไม่ได้สร้างรายการ{% endif %}<hr></td></tr>
+                            {% endif %}
                             </tbody>
                         </table>
                     </div>
                     <!-- /.card-body -->
+
+                    <div class="row">
+                        <!-- accepted payments column -->
+                        <div class="col-6">
+                            <p class="lead"></p>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-6">
+                            <div class="table-responsive">
+                                <table class="table float-right" style="width:90%">
+                                    <tr>
+                                        <th>เช็คแล้ว {{Checking_Count}} รายการ</th>
+                                        <th>มูลค่าสินค้า = ฿ {{Checking_Price|intcomma}}</th>
+                                    </tr>
+                                    <tr>
+                                        <th>ยังไม่เช็ค {{Notcheck_Count}} รายการ</th>
+                                        <th>มูลค่าสินค้า = ฿ {{Notcheck_Price|intcomma}}</th>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                        <div class="main-footer"></div>
+                    </div>
+                    <!-- /.row -->
+                
+
                 </div>
                 <!-- /.card -->
             </div>
@@ -92,7 +146,14 @@
         <!-- /.row -->
         <div class="row no-print">
             <div class="col-12">
-              <a href="{% url 'checkstock-Print' %}" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
+            {% if Check_Stock %}
+              <a href="{% url 'CheckStock-Print' %}" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
+            {% endif %}
+            {% if not Stock %}
+                <button type="button" id="create_stock" class="btn btn-success float-right" OnClick="JavaScript:doCallCreateStock();"><i class="far fa-edit"></i> สร้างรายการเช็คสต๊อก</button>
+            {% else %}
+                <button type="button" id="create_stock" class="btn btn-warning float-right" OnClick="JavaScript:doCallCreateStock();"><i class="far fa-edit"></i> สร้างรายการเช็คสต๊อกใหม่</button>
+            {% endif %}
             </div>
         </div>
     </div><!--/. container-fluid -->

@@ -1,6 +1,7 @@
 {% extends 'layout/home.html' %}
 
 {% load static %}
+{% load humanize %}
 
 {% block page_title %}คลังสินค้า | {{Configs.Header.title}}{% endblock %}
 {% block page_path %}คลังสินค้า{% endblock %}
@@ -69,7 +70,8 @@
             <thead>
             <tr>
               <th>รหัสสินค้า</th>
-              <th>บาร์โค้ด</th>
+              <th>บาร์โค้ดสินค้า</th>
+              <th>บาร์โค้ดแอดไวซ์</th>
               <th>ชื่อสินค้า</th>
               <th>ราคาขาย</th>
               <th>ประเภท</th>
@@ -81,10 +83,11 @@
             <tr>
               <td>{{item.item_id.product_id}}</td>
               <td>{{item.barcode_ean}}</td>
+              <td>{{item.barcode_aup}}</td>
               <td>{{item.item_id.product_name}}</td>
-              <td>{{item.item_id.product_price}}</td>
+              <td>{{item.item_id.product_price|intcomma}}</td>
               <td>{{item.item_id.get_product_type_display}}</td>
-              <td>{{item.item_regis}}</td>
+              <td>{{item.item_regis|date:'d-m-Y H:i'}}</td>
             </tr>
             {% endfor %}
             </tbody>

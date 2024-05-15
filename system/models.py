@@ -43,9 +43,9 @@ class Itemlist(models.Model):
     )
     item_id  = models.ForeignKey(Products, on_delete=models.CASCADE)
     barcode_ean = models.CharField(max_length=20, blank=True, null=True)
-    barcode_imei1 = models.CharField(max_length=20, blank=True, null=True, unique=True)
-    barcode_imei2 = models.CharField(max_length=20, blank=True, null=True, unique=True)
-    barcode_imei3 = models.CharField(max_length=20, blank=True, null=True, unique=True)
+    barcode_imei1 = models.CharField(max_length=20, blank=True, null=True)
+    barcode_imei2 = models.CharField(max_length=20, blank=True, null=True)
+    barcode_imei3 = models.CharField(max_length=20, blank=True, null=True)
     barcode_aup = models.CharField(max_length=20, blank=True, null=True, unique=True)
     item_regis = models.DateTimeField(auto_now_add=True)
     item_status = models.CharField(max_length=1, choices=status)
@@ -98,6 +98,38 @@ class Topup(models.Model):
         return self.phone_number
     
 #== End Selling System ==#
+
+#== Store System ==#
+
+# Stock Out
+class StockOut(models.Model):
+    username = models.CharField(max_length=20)
+    barcode = models.ForeignKey(Itemlist, on_delete=models.CASCADE)
+    count = models.IntegerField(default=1)
+    
+    class Meta:
+        verbose_name = "StockOut"
+        verbose_name_plural = "Stock Out"
+        
+    def __str__(self):
+        return self.barcode.item_id.product_name
+    
+# Check Stock
+class CheckStock(models.Model):
+    username = models.CharField(max_length=20)
+    barcode = models.ForeignKey(Itemlist, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    count = models.IntegerField(default=1)
+    active = models.BooleanField(default=False)
+    
+    class Meta:
+        verbose_name = "CheckStock"
+        verbose_name_plural = "Check Stock"
+        
+    def __str__(self):
+        return self.barcode.item_id.product_name
+
+#== End Store System ==#
 
 #== Members System ==#
 

@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,6 +15,16 @@
   <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+  <style>
+    .get_money {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 5%;
+    }
+</style>
 </head>
 
 <body>
@@ -23,39 +34,77 @@
       <div class="container-fluid">
         <!-- Info boxes -->
         <div class="row">
+
+          <div class="col-12">
+            <h4>
+                ดี เซอร์วิส<span class="text-muted well well-sm shadow-none">(เทสโก้โลตัส อุทุมพรพิสัย)</span>
+                <small class="float-right">รายงานการเช็คสต๊อก ประจำเดือน {% now "F Y" %}</small>
+            </h4>
+          </div>
+          <!-- /.col -->
+
           <div class="col-12">
             <div class="card">
               <!-- /.card-header -->
-              <div class="card-body table-responsive p-0" style="height: 300px;">
-                <table class="table table-head-fixed text-nowrap">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>รหัสสินค้า</th>
-                      <th>บาร์โค้ด</th>
-                      <th>ชื่อสินค้า</th>
-                      <th>จำนวน</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>D46546544</td>
-                      <td>484654646554</td>
-                      <td>Approved</td>
-                      <td>1</td>
-                    </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>D46546544</td>
-                      <td>484654646554</td>
-                      <td>Approved</td>
-                      <td>1</td>
-                    </tr>
-                  </tbody>
+              <div class="col-12 table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>บาร์โค้ดสินค้า</th>
+                            <th>บาร์โค้ดขาย</th>
+                            <th>ชื่อสินค้า</th>
+                            <th>ราคาขาย</th>
+                            <th>ประเภท</th>
+                            <th>วันที่รับเข้า</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if Stock %}
+                      {% for item in Stock %}
+                        <tr>
+                            <td>{{item.barcode.barcode_ean}}</td>
+                            <td>{{item.barcode.barcode_aup}}</td>
+                            <td>{{item.barcode.item_id.product_name}}</td>
+                            <td>{{item.price|intcomma}}</td>
+                            <td>{{item.barcode.item_id.get_product_type_display}}</td>
+                            <td>{{item.barcode.item_regis}}</td>
+                        </tr>
+                      {% endfor %}
+                    {% else %}
+                      <tr><td colspan="6" style="text-align:center;">{% if Check_Stock %}ครบแล้ว{% else %}ยังไม่ได้สร้างรายการ{% endif %}<hr></td></tr>
+                    {% endif %}
+                    </tbody>
                 </table>
               </div>
               <!-- /.card-body -->
+
+              <div class="row">
+                <!-- accepted payments column -->
+                <div class="col-6">
+                    <p class="lead"></p>
+                </div>
+                <!-- /.col -->
+                <div class="col-6">
+
+                    <div class="table-responsive">
+                        <table class="table float-right" style="width:100%">
+                          <tr>
+                            <th>เช็คแล้ว {{Checking_Count}} รายการ</th>
+                            <th>มูลค่าสินค้า = ฿ {{Checking_Price|intcomma}}</th>
+                          </tr>
+                          <tr>
+                              <th>ยังไม่เช็ค {{Notcheck_Count}} รายการ</th>
+                              <th>มูลค่าสินค้า = ฿ {{Notcheck_Price|intcomma}}</th>
+                          </tr>
+                        </table>
+                    </div>
+
+                </div>
+                <!-- /.col -->
+                <div class="main-footer"></div>
+              </div>
+              <!-- /.row -->
+
             </div>
             <!-- /.card -->
           </div>
@@ -63,6 +112,35 @@
         <!-- /.row -->
       </div><!--/. container-fluid -->
     </section>
+
+    <table class="get_money">
+      <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+      </tr>
+      <tr>
+          <th><hr width="500"></th>
+          <th></th>
+          <th><hr width="300"></th>
+      </tr>
+      <tr>
+          <th>สรุปรายงาน</th>
+          <th></th>
+          <th>พนักงาน</th>
+      </tr>
+      <tr>
+          <th><br></th>
+          <th><br></th>
+          <th><br></th>
+      </tr>
+      <tr>
+          <th></th>
+              <th></th>
+          <th>_____/_____/_____</th>
+      </tr>
+    </table>
+
     <!-- /.content -->
   </div>
   <!-- ./wrapper -->

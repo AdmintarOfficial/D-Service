@@ -177,8 +177,8 @@ def cancel_bill(request):
             # Context Default
             context = contexts.Context_Default(request)
             # Add context
-            context['Sell_Log'] = objects.bill_cancel(request, 'Sell_Log')
-            context['Topup_Log'] = objects.bill_cancel(request, 'Topup_Log')
+            context['Sell_Log'] = objects.Bill_cancel(request, 'Sell_Log')
+            context['Topup_Log'] = objects.Bill_cancel(request, 'Topup_Log')
             return render(request, 'cancen-bill.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')
@@ -220,17 +220,77 @@ def stockin(request):
 # Check Stock
 def checkstock(request):
     if request.user.is_authenticated:
-        return render(request, 'checkstock.html', contexts.Context_Default(request))
+        if 'tcreate_stock' in request.POST:
+            # Add items to cart actions
+            create_stock = functions.CreateStock(request)
+            return HttpResponse(create_stock, content_type="application/json")
+        elif 'tcheck_stock' in request.POST:
+            # Add items to cart actions
+            check_stock = functions.CheckStock(request)
+            return HttpResponse(check_stock, content_type="application/json")
+        else:
+            # Context Default
+            context = contexts.Context_Default(request)
+            # Add context
+            context['Stock'] = objects.CheckStock(request, None)
+            context['Check_Stock'] = objects.CheckStock(request, True)
+            context['Checking_Price'] = objects.CheckStock(request, 'Checking_Price')
+            context['Checking_Count'] = objects.CheckStock(request, 'Checking_Count')
+            context['Notcheck_Price'] = objects.CheckStock(request, 'Notcheck_Price')
+            context['Notcheck_Count'] = objects.CheckStock(request, 'Notcheck_Count')
+            return render(request, 'checkstock.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')
 
 def checkstock_print(request):
     if request.user.is_authenticated:
-        return render(request, 'prints/checkstock.html', contexts.Context_Default(request))
+        # Context Default
+        context = contexts.Context_Default(request)
+        # Add context
+        context['Stock'] = objects.CheckStock(request, None)
+        context['Check_Stock'] = objects.CheckStock(request, True)
+        context['Checking_Price'] = objects.CheckStock(request, 'Checking_Price')
+        context['Checking_Count'] = objects.CheckStock(request, 'Checking_Count')
+        context['Notcheck_Price'] = objects.CheckStock(request, 'Notcheck_Price')
+        context['Notcheck_Count'] = objects.CheckStock(request, 'Notcheck_Count')
+        return render(request, 'prints/checkstock.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')
 
 #== End Warehouse ==#
+
+#== Report System ==#
+
+# Selling Today
+def selling_today(request):
+    if request.user.is_authenticated:
+        # Context Default
+        context = contexts.Context_Default(request)
+        # Add context
+        context['Sell_Log'] = objects.SellReport(request, 'Sell_Log')
+        context['Topup_Log'] = objects.SellReport(request, 'Topup_Log')
+        context['Total_Cash'] = objects.SellReport(request, 'Total_Cash')
+        context['Total_Transfer'] = objects.SellReport(request, 'Total_Transfer')
+        context['Total_Price'] = objects.SellReport(request, 'Total_Price')
+        return render(request, 'selling-today.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')
+    
+def selling_today_print(request):
+    if request.user.is_authenticated:
+        # Context Default
+        context = contexts.Context_Default(request)
+        # Add context
+        context['Sell_Log'] = objects.SellReport(request, 'Sell_Log')
+        context['Topup_Log'] = objects.SellReport(request, 'Topup_Log')
+        context['Total_Cash'] = objects.SellReport(request, 'Total_Cash')
+        context['Total_Transfer'] = objects.SellReport(request, 'Total_Transfer')
+        context['Total_Price'] = objects.SellReport(request, 'Total_Price')
+        return render(request, 'prints/selling-today.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')
+
+#== Report System ==#
 
 #== Members System ==#
 

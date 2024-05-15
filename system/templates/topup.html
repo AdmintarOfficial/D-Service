@@ -1,6 +1,7 @@
 {% extends 'layout/home.html' %}
 
 {% load static %}
+{% load humanize %}
 
 {% block page_title %}เติมเงินออนไลน์ | {{Configs.Header.title}}{% endblock %}
 {% block page_path %}เติมเงินออนไลน์{% endblock %}
@@ -201,7 +202,7 @@
                 <td></td>
                 <td>{{cart.phone_number}}</td>
                 <td>{{cart.get_network_display}}</td>
-                <td>{{cart.price}}</td>
+                <td>{{cart.price|intcomma}}</td>
                 <td class="project-actions text-right">
                     <form name="delidform">
                         {% csrf_token %}
@@ -215,7 +216,7 @@
             <tfoot>
                 <tr>
                     <td colspan="3" style="text-align:right;">ราคารวม</td>
-                    <td colspan="2" style="text-align:center;"><button class="btn btn-block btn-outline-warning btn-sm">฿ {{Total_Price}}</button></td>
+                    <td colspan="2" style="text-align:center;"><button class="btn btn-block btn-outline-warning btn-sm">฿ {{Total_Price|intcomma}}</button></td>
                 </tr>
             </tfoot>
           </table>

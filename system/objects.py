@@ -88,7 +88,7 @@ def Cart_Topup(request, value, barcode):
         return total_price
     
 # Billing Cancel
-def bill_cancel(request, value):
+def Bill_cancel(request, value):
     sell = models_log.Selling_Log.objects.filter(datetime__date=timezone.now().date())
     topup = models_log.Topup_Log.objects.filter(datetime__date=timezone.now().date())
     
@@ -96,6 +96,59 @@ def bill_cancel(request, value):
         return sell
     elif value == 'Topup_Log':
         return topup
+    
+# Selling Report
+def SellReport(request, value):
+    sell_log = models_log.Selling_Log.objects.filter(active=True, datetime__date=timezone.now().date())
+    topup_log = models_log.Topup_Log.objects.filter(active=True, datetime__date=timezone.now().date())
+    
+    # Cash
+    sell_cash = models_log.Selling_Log.objects.filter(active=True, datetime__date=timezone.now().date()).aggregate(Sum('cash_money'))['cash_money__sum']
+    topup_cash = models_log.Topup_Log.objects.filter(active=True, datetime__date=timezone.now().date()).aggregate(Sum('cash_money'))['cash_money__sum']
+    # Transfer
+    sell_transfer = models_log.Selling_Log.objects.filter(active=True, datetime__date=timezone.now().date()).aggregate(Sum('transfer_money'))['transfer_money__sum']
+    topup_transfer = models_log.Topup_Log.objects.filter(active=True, datetime__date=timezone.now().date()).aggregate(Sum('transfer_money'))['transfer_money__sum']
+    
+    total_cash = int(sell_cash)+int(topup_cash)
+    total_transfer = int(sell_transfer)+int(topup_transfer)
+    total_price = int(total_cash)+int(total_transfer)
+    
+    if value == "Sell_Log":
+        return sell_log
+    elif value == "Topup_Log":
+        return topup_log
+    elif value == "Total_Cash":
+        return total_cash
+    elif value == "Total_Transfer":
+        return total_transfer
+    elif value == "Total_Price":
+        return total_price
+    else:
+        return None
+    
+# Check Stock
+def CheckStock(request, value):
+    # Stock
+    not_stock = models.CheckStock.objects.filter(active=False)
+    check_stock = models.CheckStock.objects.filter(active=True)
+    
+    checking_price = check_stock.aggregate(Sum('price'))['price__sum']
+    checking_count = check_stock.aggregate(Sum('count'))['count__sum']
+    notcheck_price = not_stock.aggregate(Sum('price'))['price__sum']
+    notcheck_count = not_stock.aggregate(Sum('count'))['count__sum']
+    
+    if value == "Checking_Price":
+        return checking_price
+    elif value == "Checking_Count":
+        return checking_count
+    elif value == "Notcheck_Price":
+        return notcheck_price
+    elif value == "Notcheck_Count":
+        return notcheck_count
+    elif value == True:
+        return check_stock
+    else:
+        return not_stock
     
 # Members
 def Members(request, name):

@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -19,7 +20,7 @@
             bottom: 0;
             width: 100%;
             text-align: center;
-            margin-bottom: 10%;
+            margin-bottom: 5%;
         }
     </style>
 </head>
@@ -97,7 +98,7 @@
                                 <td>{{bdl.sell_barcode.barcode_ean}}</td>
                                 <td>{{bdl.sell_barcode.item_id.product_name}}</td>
                                 <td>1</td>
-                                <td>฿ {{bdl.sell_price}}</td>
+                                <td>฿ {{bdl.sell_price|intcomma}}</td>
                             </tr>
                             {% endfor %}
                             </tbody>
@@ -132,30 +133,30 @@
                                 <table class="table">
                                     <tr>
                                         <th style="width:50%">ราคาสินค้า :</th>
-                                        <td>฿ {{Billing_Total_Price_Log}}</td>
+                                        <td>฿ {{Billing_Total_Price_Log|intcomma}}</td>
                                     </tr>
     
                                     {% if Billing_Log.bill_status == "1" %}
                                     <tr>
                                         <th>วางดาวน์ :</th>
-                                        <td>฿ {{Billing_Log.down_payment}}</td>
+                                        <td>฿ {{Billing_Log.down_payment|intcomma}}</td>
                                     </tr>
                                     <tr>
                                         <th>ค่าบริการ :</th>
-                                        <td>฿ {{Billing_Log.fee}}</td>
+                                        <td>฿ {{Billing_Log.fee|intcomma}}</td>
                                     </tr>
                                     {% endif %}
     
                                     {% if Billing_Log.bill_status == "2" %}
                                     <tr>
                                         <th>ส่วนลด :</th>
-                                        <td>฿ {{Billing_Log.discount}}</td>
+                                        <td>฿ {{Billing_Log.discount|intcomma}}</td>
                                     </tr>
                                     {% endif %}
     
                                     <tr>
                                         <th>จำนวนเงินทั้งสิ้น :</th>
-                                        <td>฿ {{Billing_Log.total_price}}</td>
+                                        <td>฿ {{Billing_Log.total_price|intcomma}}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -167,18 +168,18 @@
                                 {% if Billing_Log.cash_money > 0 %}
                                     <tr>
                                         <th style="width:50%">เงินสด :</th>
-                                        <td>฿ {{Billing_Log.cash_money}}</td>
+                                        <td>฿ {{Billing_Log.cash_money|intcomma}}</td>
                                     </tr>
                                 {% endif %}
                                 {% if Billing_Log.transfer_money > 0 %}
                                     <tr>
                                         <th>เงินโอน :</th>
-                                        <td>฿ {{Billing_Log.transfer_money}}</td>
+                                        <td>฿ {{Billing_Log.transfer_money|intcomma}}</td>
                                     </tr>
                                 {% endif %}
                                     <tr>
                                         <th>เงินทอน :</th>
-                                        <td>฿ {{Billing_Change_Log}}</td>
+                                        <td>฿ {{Billing_Change_Log|intcomma}}.00</td>
                                     </tr>
                                 </table>
                             </div>
@@ -202,9 +203,9 @@
             <th></th>
         </tr>
         <tr>
-            <th><hr width="200"></th>
+            <th><hr width="350"></th>
             <th></th>
-            <th><hr width="200"></th>
+            <th><hr width="350"></th>
         </tr>
         <tr>
             <th>ผู้รับเงิน</th>
@@ -217,9 +218,9 @@
             <th><br></th>
         </tr>
         <tr>
-            <th>_____/_____/_____</th>
-                <th></th>
-            <th>_____/_____/_____</th>
+            <th>__________/__________/__________</th>
+            <th></th>
+            <th>__________/__________/__________</th>
         </tr>
     </table>
 

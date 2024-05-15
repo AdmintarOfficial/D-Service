@@ -497,4 +497,63 @@ def AddProdect(request):
             else:
                 return JsonResponse({"status":"N","alertify":"เกิดข้อผิดพลาดขณะบันทึกข้อมูล"})
     
-                
+# Create Stock
+def CreateStock(request):
+    store = models.Itemlist.objects.filter(item_status=1)
+    
+    if store:
+        stock = models.CheckStock.objects.all()
+        if stock:
+            stock.delete()
+            for item in store:
+                models.CheckStock(
+                    username = request.user.username,
+                    barcode_id = item.id,
+                    price = item.item_id.product_price,
+                    count = 1
+                ).save()
+            return JsonResponse({"status":"Y","url":"/เช็คสต๊อก/"})
+        else:
+            for item in store:
+                models.CheckStock(
+                    username = request.user.username,
+                    barcode_id = item.id,
+                    price = item.item_id.product_price,
+                    count = 1
+                ).save()
+            return JsonResponse({"status":"Y","url":"/เช็คสต๊อก/"})
+    else:
+        return JsonResponse({"status":"N","alertify":"ไม่พบสินค้าในคลังสินค้า"})
+    
+# Check Stock
+def CheckStock(request):
+    # Stock form
+    barcode = request.POST['tbarcode']
+    sl_barcode = request.POST['tsl_barcode']
+    
+    if (not barcode):
+        return JsonResponse({"status":"N","alertify":"ไม่พบบาร์โค้ด"})
+    else:
+        # Get Item
+        if sl_barcode == "true":
+            stock = models.CheckStock.objects.filter(barcode__barcode_ean=barcode)
+        elif sl_barcode == "false":
+            stock = models.CheckStock.objects.filter(barcode__barcode_aup=barcode)
+        
+        if not stock:
+            return JsonResponse({"status":"N","alertify":"บาร์โค้ดไม่ถูกต้อง"})
+        else:
+            # Get Item Check
+            if sl_barcode == "true":
+                item = models.CheckStock.objects.get(barcode__barcode_ean=barcode)
+                if item.active == True:
+                    return JsonResponse({"status":"N","alertify":"สินค้าถูกเช็คแล้ว"})
+                else:
+                    models.CheckStock.objects.filter(barcode__barcode_ean=barcode).update(active=True)
+            elif sl_barcode == "false":
+                item = models.CheckStock.objects.get(barcode__barcode_aup=barcode)
+                if item.active == True:
+                    return JsonResponse({"status":"N","alertify":"สินค้าถูกเช็คแล้ว"})
+                else:
+                    models.CheckStock.objects.filter(barcode__barcode_aup=barcode).update(active=True)
+            return JsonResponse({"status":"Y","url":"/เช็คสต๊อก/"})

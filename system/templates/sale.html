@@ -1,6 +1,7 @@
 {% extends 'layout/home.html' %}
 
 {% load static %}
+{% load humanize %}
 
 {% block page_title %}ขายสินค้า | {{Configs.Header.title}}{% endblock %}
 {% block page_path %}ขายสินค้า{% endblock %}
@@ -155,10 +156,10 @@
 
                     <div class="form-group">
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="sl_barcode" value="ean" checked>
+                            <input class="form-check-input" type="radio" name="sl_barcode" value="ean">
                             <label class="form-check-label">EAN</label>
                             <label style="width:40px;"></label>
-                            <input class="form-check-input" type="radio" name="sl_barcode" value="aup">
+                            <input class="form-check-input" type="radio" name="sl_barcode" value="aup" checked>
                             <label class="form-check-label">AUP</label>
                         </div>
                     </div>
@@ -193,7 +194,7 @@
                 <td>{{cart.barcode.barcode_ean}}</td>
                 <td>{{cart.barcode.item_id.product_name}}</td>
                 <td>{{cart.count}}</td>
-                <td>{{cart.price}}</td>
+                <td>{{cart.price|intcomma}}</td>
                 <td class="project-actions text-right">
                     <form name="delidform">
                         {% csrf_token %}
@@ -207,7 +208,7 @@
             <tfoot>
                 <tr>
                     <td colspan="4" style="text-align:right;">ราคารวม</td>
-                    <td colspan="2" style="text-align:center;"><button class="btn btn-block btn-outline-warning btn-sm">฿ {{Total_Price}}</button></td>
+                    <td colspan="2" style="text-align:center;"><button class="btn btn-block btn-outline-warning btn-sm">฿ {{Total_Price|intcomma}}</button></td>
                 </tr>
             </tfoot>
           </table>
