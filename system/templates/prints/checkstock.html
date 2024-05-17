@@ -6,7 +6,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>เช็คสต๊อก | {{Configs.Header.title}}</title>
+  <title>เช็คสต๊อก|{% now "d-F-Y" %}</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet"
@@ -50,27 +50,36 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>บาร์โค้ดสินค้า</th>
-                            <th>บาร์โค้ดขาย</th>
-                            <th>ชื่อสินค้า</th>
-                            <th>ราคาขาย</th>
-                            <th>ประเภท</th>
-                            <th>วันที่รับเข้า</th>
+                          <th>#</th>
+                          <th>บาร์โค้ดแอดไวซ์</th>
+                          <th>ชื่อสินค้า</th>
+                          <th>ราคาขาย</th>
+                          <th>ประเภท</th>
+                          <th>วันที่รับเข้า</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {% if Stock %}
-                      {% for item in Stock %}
-                        <tr>
-                            <td>{{item.barcode.barcode_ean}}</td>
-                            <td>{{item.barcode.barcode_aup}}</td>
-                            <td>{{item.barcode.item_id.product_name}}</td>
-                            <td>{{item.price|intcomma}}</td>
-                            <td>{{item.barcode.item_id.get_product_type_display}}</td>
-                            <td>{{item.barcode.item_regis}}</td>
-                        </tr>
-                      {% endfor %}
-                    {% else %}
+                    {% for item in Check_Stock %}
+                      <tr>
+                        <td>เช็คแล้ว</td>
+                        <td>{{item.barcode.barcode_aup}}</td>
+                        <td>{{item.barcode.item_id.product_name}}</td>
+                        <td>{{item.price|intcomma}}</td>
+                        <td>{{item.barcode.item_id.get_product_type_display}}</td>
+                        <td>{{item.barcode.item_regis}}</td>
+                      </tr>
+                    {% endfor %}
+                    {% for item in NotCheck_Stock %}
+                      <tr>
+                        <td>ยังไม่เช็ค</td>
+                        <td>{{item.barcode.barcode_aup}}</td>
+                        <td>{{item.barcode.item_id.product_name}}</td>
+                        <td>{{item.price|intcomma}}</td>
+                        <td>{{item.barcode.item_id.get_product_type_display}}</td>
+                        <td>{{item.barcode.item_regis}}</td>
+                      </tr>
+                    {% endfor %}
+                    {% if not Stock %}
                       <tr><td colspan="6" style="text-align:center;">{% if Check_Stock %}ครบแล้ว{% else %}ยังไม่ได้สร้างรายการ{% endif %}<hr></td></tr>
                     {% endif %}
                     </tbody>

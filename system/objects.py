@@ -42,6 +42,8 @@ def Cart(request, value, barcode):
         return total_price
     elif value == 'Total_Count':
         return total_count
+    else:
+        return None
     
 # Billing Log
 def Billing_Log(request, value, sell_id):
@@ -59,6 +61,8 @@ def Billing_Log(request, value, sell_id):
         return billing_total_price_log
     elif value == 'Billing_Change_Log':
         return change
+    else:
+        return None
     
 # Billing Log
 def BillingTopup_Log(request, value, topup_id):
@@ -76,6 +80,8 @@ def BillingTopup_Log(request, value, topup_id):
         return billing_total_price_log
     elif value == 'Billing_Change_Log':
         return change
+    else:
+        return None
     
 # Cart Topup Check
 def Cart_Topup(request, value, barcode):
@@ -86,6 +92,8 @@ def Cart_Topup(request, value, barcode):
         return cart_list
     elif value == 'Total_Price':
         return total_price
+    else:
+        return None
     
 # Billing Cancel
 def Bill_cancel(request, value):
@@ -96,6 +104,8 @@ def Bill_cancel(request, value):
         return sell
     elif value == 'Topup_Log':
         return topup
+    else:
+        return None
     
 # Selling Report
 def SellReport(request, value):
@@ -108,6 +118,18 @@ def SellReport(request, value):
     # Transfer
     sell_transfer = models_log.Selling_Log.objects.filter(active=True, datetime__date=timezone.now().date()).aggregate(Sum('transfer_money'))['transfer_money__sum']
     topup_transfer = models_log.Topup_Log.objects.filter(active=True, datetime__date=timezone.now().date()).aggregate(Sum('transfer_money'))['transfer_money__sum']
+    
+    if sell_cash == None:
+        sell_cash = 0
+    
+    if topup_cash == None:
+        topup_cash = 0
+        
+    if sell_transfer == None:
+        sell_transfer = 0
+    
+    if topup_transfer == None:
+        topup_transfer = 0
     
     total_cash = int(sell_cash)+int(topup_cash)
     total_transfer = int(sell_transfer)+int(topup_transfer)
@@ -123,6 +145,21 @@ def SellReport(request, value):
         return total_transfer
     elif value == "Total_Price":
         return total_price
+    else:
+        return None
+    
+# Stock Out
+def StockOut(request, value, barcode):
+    stock_out = models.StockOut.objects.all()
+    cart_chk = models.StockOut.objects.filter(barcode_id=barcode)
+    total_count = models.StockOut.objects.all().aggregate(Sum('count'))['count__sum']
+    
+    if value == 'Check':
+        return cart_chk
+    elif value == 'List':
+        return stock_out
+    elif value == 'Total_Count':
+        return total_count
     else:
         return None
     

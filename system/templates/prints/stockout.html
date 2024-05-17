@@ -1,0 +1,175 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ใบโอนสินค้า_{% now "d F Y" %}</title>
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+    <style>
+        .get_money {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 5%;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+    
+                <!-- Main content -->
+                <div class="invoice p-3 mb-3">
+                    <!-- title row -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h4>
+                                ดี เซอร์วิส<span class="text-muted well well-sm shadow-none">(เทสโก้โลตัส อุทุมพรพิสัย)</span>
+                                <small class="float-right">ใบโอนสินค้า</small>
+                            </h4>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <hr>
+                    <br>
+                    <!-- info row -->
+                    <div class="row invoice-info">
+                        <div class="col-sm-4 invoice-col">
+                            <b>ร้าน</b>
+                            <address>
+                            <strong>ดี เซอร์วิส</strong><span class="text-muted well well-sm shadow-none"> (เทสโก้โลตัส อุทุมพรพิสัย)</span><br>
+                            95 หมู่ 2 ต.กำแพง อ.อุทุมพรพิสัย จ.ศรีสะเกษ<br>
+                            โทร. 082 131 4238
+                            </address>
+                        </div>
+                        <!-- /.col -->
+                    <div class="col-sm-4 invoice-col">
+                        <b>ผู้รับ</b>
+                        <address>
+                            <strong>บริษัท แอดไวซ์อุทุมพรพิสัย จำกัด</strong><br>
+                            680/23 ม.7 ถ.อุบลฯ-ศรีสะเกษ ต.กำแพง อ.อุทุมพรพิสัย จ.ศรีสะเกษ<br>
+                            โทร. 045-691707 , 094-2811155
+                        </address>
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-sm-4 invoice-col">
+                        <b></b> <br>
+                        <b>พนักงาน:</b> {{request.user.username}}<br>
+                        <b>รหัสรายการ:</b> {% now "YmdHi" %}<br>
+                        <b>วันที่:</b> {% now "d F Y" %}<br>
+                    </div>
+                    <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                    <br>
+                    <!-- Table row -->
+                    <div class="row">
+                    <div class="col-12 table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10px">#</th>
+                                    <th>บาร์โค้ดสินค้า</th>
+                                    <th>บาร์โค้ดแอดไวซ์</th>
+                                    <th>รายการ</th>
+                                    <th>จำนวน</th>
+                                    <th>ราคา</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in StockOut %}
+                                <tr>
+                                    <td></td>
+                                    <td>{{item.barcode.barcode_ean}}</td>
+                                    <td>{{item.barcode.barcode_aup}}</td>
+                                    <td>{{item.barcode.item_id.product_name}}</td>
+                                    <td>{{item.count}}</td>
+                                    <td>{{item.barcode.item_id.product_price|intcomma}}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                    <br>
+                    <div class="row">
+                        <!-- accepted payments column -->
+                        <div class="col-6">
+                            <p class="lead"></p>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-6">
+    
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <th style="width:10%"></th>
+                                        <th style="width:10%">รวมทั้งหมด {{Total_Count}} รายการ</th>
+                                    </tr>
+                                </table>
+                            </div>
+    
+                        </div>
+                        <!-- /.col -->
+                        
+                    </div>
+                    <!-- /.row -->
+                <!-- /.invoice -->
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <table class="get_money">
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        <tr>
+            <th><hr width="350"></th>
+            <th></th>
+            <th><hr width="350"></th>
+        </tr>
+        <tr>
+            <th>ผู้ส่งสินค้า</th>
+            <th></th>
+            <th>ผู้รับสินค้า</th>
+        </tr>
+        <tr>
+            <th><br></th>
+            <th><br></th>
+            <th><br></th>
+        </tr>
+        <tr>
+            <th>__________/__________/__________</th>
+            <th></th>
+            <th>__________/__________/__________</th>
+        </tr>
+    </table>
+
+    <!-- /.content -->
+</div>
+<!-- ./wrapper -->
+<!-- Page specific script -->
+<script>
+  window.addEventListener("load", window.print());
+</script>
+</body>
+</html>

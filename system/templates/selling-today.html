@@ -60,7 +60,7 @@
                             {% for sell in Sell_Log %}
                                 <tr>
                                     <td># {{sell.id}}</td>
-                                    <td>{{sell.sell_id}}</td>
+                                    <td><a href="{% url 'Invoice' %}?get={{sell.sell_id}}" rel="noopener" target="_blank" >{{sell.sell_id}}</a></td>
                                     <td>{{sell.total_price|intcomma}}</td>
                                     <td>{{sell.transfer_money|intcomma}}</td>
                                     <td>{{sell.cash_money|intcomma}}</td>
@@ -72,7 +72,7 @@
                             {% for topup in Topup_Log %}
                                 <tr>
                                     <td># {{topup.id}}</td>
-                                    <td>{{topup.topup_id}}</td>
+                                    <td><a href="{% url 'Invoice-Topup' %}?get={{topup.topup_id}}" rel="noopener" target="_blank" >{{topup.topup_id}}</a></td>
                                     <td>{{topup.total_price|intcomma}}</td>
                                     <td>{{topup.transfer_money|intcomma}}</td>
                                     <td>{{topup.cash_money|intcomma}}</td>

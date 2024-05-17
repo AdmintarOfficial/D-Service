@@ -118,7 +118,7 @@ class StockOut(models.Model):
 class CheckStock(models.Model):
     username = models.CharField(max_length=20)
     barcode = models.ForeignKey(Itemlist, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    price = models.DecimalField(max_digits=8, decimal_places=2)
     count = models.IntegerField(default=1)
     active = models.BooleanField(default=False)
     

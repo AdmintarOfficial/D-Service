@@ -201,19 +201,58 @@ def store(request):
 def stockin(request):
     if request.user.is_authenticated:
         if 'tget_item' in request.POST:
-            # Add items to cart actions
-            get_item = functions.StockIn(request)
+            # Add items to StockOut actions
+            get_item = functions.StockOut(request, 'Get_Item')
             return HttpResponse(get_item, content_type="application/json")
         elif 'tadd_item' in request.POST:
-            # Add items to cart actions
-            add_item = functions.AddProdect(request)
-            return HttpResponse(add_item, content_type="application/json")
+            # Stock Out actions
+            stockout = functions.StockOut(request, 'StockOut')
+            return HttpResponse(stockout, content_type="application/json")
         else:
             # Context Default
             context = contexts.Context_Default(request)
             # Add context
             context['Product'] = objects.store(request, 'Product')
             return render(request, 'stockin.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')
+    
+# Stock In
+def stockout(request):
+    if request.user.is_authenticated:
+        if 'tget_item' in request.POST:
+            # Add items to Stock Out actions
+            addstock_out = functions.AddStockOut(request)
+            return HttpResponse(addstock_out, content_type="application/json")
+        elif 'tstock_out' in request.POST:
+            # Add items to cart actions
+            addcart = functions.StockOut(request)
+            return HttpResponse(addcart, content_type="application/json")
+        elif 'tdel_id' in request.POST:
+            # Del item ID
+            Del_id = functions.DelStockOut(request, 'Del_ID')
+            return HttpResponse(Del_id, content_type="application/json")
+        elif 'tdel_all' in request.POST:
+            # Del item ID
+            Del_All = functions.DelStockOut(request, 'Del_All')
+            return HttpResponse(Del_All, content_type="application/json")
+        else:     
+            # Context Default
+            context = contexts.Context_Default(request)
+            # Add context
+            context['StockOut'] = objects.StockOut(request, 'List', None)
+            return render(request, 'stockout.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')
+    
+def stockout_print(request):
+    if request.user.is_authenticated:
+        # Context Default
+        context = contexts.Context_Default(request)
+        # Add context
+        context['StockOut'] = objects.StockOut(request, 'List', None)
+        context['Total_Count'] = objects.StockOut(request, 'Total_Count', None)
+        return render(request, 'prints/stockout.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')
     
@@ -249,6 +288,7 @@ def checkstock_print(request):
         # Add context
         context['Stock'] = objects.CheckStock(request, None)
         context['Check_Stock'] = objects.CheckStock(request, True)
+        context['NotCheck_Stock'] = objects.CheckStock(request, False)
         context['Checking_Price'] = objects.CheckStock(request, 'Checking_Price')
         context['Checking_Count'] = objects.CheckStock(request, 'Checking_Count')
         context['Notcheck_Price'] = objects.CheckStock(request, 'Notcheck_Price')

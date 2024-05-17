@@ -496,6 +496,100 @@ def AddProdect(request):
                 return JsonResponse({"status":"Y","url":"/รับสินค้า/"})
             else:
                 return JsonResponse({"status":"N","alertify":"เกิดข้อผิดพลาดขณะบันทึกข้อมูล"})
+            
+def DelStockOut(request, value):
+    if value == 'Del_ID':
+        # Stock Out ID form
+        stockout_id = request.POST['tid']
+        
+        if not(stockout_id):
+            return JsonResponse({"status":"N","alertify":"ไม่พบบาร์โค้ด"})
+        else:
+            # Cart ID
+            del_id = models.StockOut.objects.get(id=stockout_id)
+            
+            if del_id:
+                # Delete Cart ID
+                del_id.delete()
+                return JsonResponse({"status":"Y"})
+            else:
+                return JsonResponse({"status":"N","alertify":"ไม่พบสินค้านี้ในรายการ"})
+    elif value == 'Del_All':
+        # Cart
+        del_all = models.StockOut.objects.all()
+        
+        if del_all:
+            # Delete All Cart
+            del_all.delete()
+            return JsonResponse({"status":"Y"})
+        else:
+            return JsonResponse({"status":"N","alertify":"ไม่พบข้อมูลในรายการโอนสินค้า"})
+    else:
+        None
+        
+# Add Stock Out
+def AddStockOut(request):
+    # StockOut form
+    barcode = request.POST['tbarcode']
+    sl_barcode = request.POST['tsl_barcode']
+    
+    if (not barcode):
+        return JsonResponse({"status":"N","alertify":"ไม่พบบาร์โค้ด"})
+    else:
+        # Get Item
+        if sl_barcode == "true":
+            store = models.Itemlist.objects.filter(barcode_ean=barcode)
+        elif sl_barcode == "false":
+            store = models.Itemlist.objects.filter(barcode_aup=barcode)
+            
+        if not store:
+            return JsonResponse({"status":"N","alertify":"ไม่สามารถขายสินค้านี้ได้เนื่องจาก บาร์โค้ดไม่ถูกต้อง"})
+        else:
+            # Get Item Check
+            if sl_barcode == "true":
+                item = models.Itemlist.objects.get(barcode_ean=barcode)
+            elif sl_barcode == "false":
+                item = models.Itemlist.objects.get(barcode_aup=barcode)
+            
+            if item.item_status == "1":
+                # Check StockOut
+                stockout_chk = objects.StockOut(request, 'Check', item.id)
+        
+                if stockout_chk.exists():
+                    return JsonResponse({"status":"N","alertify":"สินค้านี้อยู่ในรายการแล้ว"})
+                else:
+                    # Add Items to StockOut
+                    add_stockout = models.StockOut(
+                        username = request.user.username,
+                        barcode_id = item.id
+                    )
+                    if add_stockout:
+                        add_stockout.save()
+                        return JsonResponse({"status":"Y"})
+                    else:
+                        return JsonResponse({"status":"N","alertify":"เกิดข้อผิดพลาดขณะบันทึกข้อมูล"})
+            elif item.item_status == "2":
+                return JsonResponse({"status":"N","alertify":"ไม่สามารถโอนสินค้านี้ได้เนื่องจาก เป็นสินค้ารอเคลม"})
+            elif item.item_status == "3":
+                return JsonResponse({"status":"N","alertify":"ไม่สามารถโอนสินค้านี้ได้เนื่องจาก สินค้าถูกโอนออกแล้ว"})
+            elif item.item_status == "4":
+                return JsonResponse({"status":"N","alertify":"ไม่สามารถขายสินค้านี้ได้เนื่องจาก สินค้านี้ถูกขายแล้ว"})
+            else:
+                return JsonResponse({"status":"N","alertify":"ไม่สามารถขายสินค้านี้ได้เนื่องจาก ไม่พบข้อมูล"})
+# Stock Out
+def StockOut(request):
+    # StockOut Check
+        stockout_chk = models.StockOut.objects.all()
+        
+        if stockout_chk:
+            for upstore in stockout_chk:
+                models.Itemlist.objects.filter(id = str(upstore.barcode.id)).update(item_status = 3)
+            DelStockOut(request, 'Del_All')
+            return JsonResponse({"status":"Y","url":"/โอนสินค้า/"})
+        else:
+            return JsonResponse({"status":"N","alertify":"ไม่พบข้อมูลในรายการโอนสินค้า"})
+    
+    
     
 # Create Stock
 def CreateStock(request):

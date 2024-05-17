@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ใบเสร็จรับเงิน | {{Configs.Header.title}}</title>
+    <title>ใบเสร็จ({{Billing_Log.sell_id}})|{% if Billing_Log.bill_status == "1" %}ซัมซุงไฟแนนซ์{% else %}ขายสินค้า{% endif %}_{{Billing_Log.datetime}}</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -86,6 +86,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>บาร์โค้ดสินค้า</th>
+                                <th>บาร์โค้ดแอดไวซ์</th>
                                 <th>รายการสินค้า</th>
                                 <th>จำนวน</th>
                                 <th>ราคา</th>
@@ -96,6 +97,7 @@
                             <tr>
                                 <td></td>
                                 <td>{{bdl.sell_barcode.barcode_ean}}</td>
+                                <td>{{bdl.sell_barcode.barcode_aup}}</td>
                                 <td>{{bdl.sell_barcode.item_id.product_name}}</td>
                                 <td>1</td>
                                 <td>฿ {{bdl.sell_price|intcomma}}</td>
