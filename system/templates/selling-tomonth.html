@@ -1,36 +1,35 @@
+{% extends 'layout/home.html' %}
+
 {% load static %}
 {% load humanize %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>สรุปยอดขายประจำวันที่_{% now "d F Y" %}</title>
+{% block page_title %}สรุปยอดขายประจำเดือน | {{Configs.Header.title}}{% endblock %}
+{% block page_path %}สรุปยอดขายประจำเดือน{% endblock %}
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet"
+{% block page_css %}
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
-  <style>
-    .get_money {
-        position: fixed;
-        left: 0;
-        bottom: 0;
-        width: 100%;
-        text-align: center;
-        margin-bottom: 5%;
-    }
-</style>
-</head>
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+<!-- Theme style -->
+<link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+{% endblock %}
 
-<body>
-  <div class="wrapper">
-    <!-- Main content -->
-    <section class="content">
+{% block page_js %}
+<!-- REQUIRED SCRIPTS -->
+<!-- jQuery -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{% static 'dist/js/demo.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<section class="content">
     <div class="container-fluid">
         <!-- Info boxes -->
         <div class="row">
@@ -39,41 +38,41 @@
                     <div class="card-header">
                         <h4>
                             ดี เซอร์วิส<span class="text-muted well well-sm shadow-none">(เทสโก้โลตัส อุทุมพรพิสัย)</span>
-                            <small class="float-right">รายงานยอดขายประจำวันที่ {% now "d F Y" %}</small>
+                            <small class="float-right">รายงานยอดขายประจำเดือน {% now "F Y" %}</small>
                         </h4>
                     </div>
                     <!-- /.card-header -->
                     <div class="col-12 table-responsive" style="height: 300px;">
-                        <table class="table table-striped text-nowrap">
+                        <table class="table table-head-fixed text-nowrap">
                             <thead>
                                 <tr>
-                                    <th>หมายเลขบิล</th>
+                                    <th style="width: 80px">หมายเลขบิล</th>
                                     <th>คำสั่งซื้อ</th>
                                     <th>ยอดขาย</th>
                                     <th>เงินโอน</th>
                                     <th>เงินสด</th>
                                     <th>ลูกค้า</th>
                                     <th>ประเภท</th>
-                                    <th>เวลา</th>
+                                    <th style="width: 40px">วันที่</th>
                                 </tr>
                             </thead>
                             <tbody>
                             {% for sell in Sell_Log %}
                                 <tr>
                                     <td># {{sell.id}}</td>
-                                    <td>{{sell.sell_id}}</td>
+                                    <td><a href="{% url 'Invoice' %}?get={{sell.sell_id}}" rel="noopener" target="_blank" >{{sell.sell_id}}</a></td>
                                     <td>{{sell.total_price|intcomma}}</td>
                                     <td>{{sell.transfer_money|intcomma}}</td>
                                     <td>{{sell.cash_money|intcomma}}</td>
                                     <td>{{sell.sell_member.first_name}} {% if sell.sell_member.last_name %}{{sell.sell_member.last_name}}{% endif %}</td>
                                     <td>{{sell.get_bill_status_display}}</td>
-                                    <td>{{sell.datetime|date:'H:i'}}</td>
+                                    <td>{{sell.datetime|date:'d'}}</td>
                                 </tr>
                             {% endfor %}
                             {% for topup in Topup_Log %}
                                 <tr>
                                     <td># {{topup.id}}</td>
-                                    <td>{{topup.topup_id}}</td>
+                                    <td><a href="{% url 'Invoice-Topup' %}?get={{topup.topup_id}}" rel="noopener" target="_blank" >{{topup.topup_id}}</a></td>
                                     <td>{{topup.total_price|intcomma}}</td>
                                     <td>{{topup.transfer_money|intcomma}}</td>
                                     <td>{{topup.cash_money|intcomma}}</td>
@@ -112,6 +111,12 @@
                             <!-- /.col -->
                         </div>
 
+                        <div class="row no-print">
+                            <div class="col-12">
+                              <a href="{% url 'Selling-Month-Print' %}" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
+                            </div>
+                        </div>
+
                     </div>
                     <!-- /.card-body -->
 
@@ -121,33 +126,5 @@
         </div>
         <!-- /.row -->
     </div><!--/. container-fluid -->
-    </section>
-
-    <table class="get_money">
-        <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tr>
-            <th><hr width="350"></th>
-            <th></th>
-            <th><hr width="350"></th>
-        </tr>
-        <tr>
-            <th>เงินสด ขาด/เกิน</th>
-            <th></th>
-            <th>พนักงาน</th>
-        </tr>
-    </table>
-
-    <!-- /.content -->
-  </div>
-  <!-- ./wrapper -->
-  <!-- Page specific script -->
-  <script>
-    window.addEventListener("load", window.print());
-  </script>
-</body>
-
-</html>
+</section>
+{% endblock %}

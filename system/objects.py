@@ -148,6 +148,47 @@ def SellReport(request, value):
     else:
         return None
     
+# Selling Report
+def SellReport_Month(request, value):
+    sell_log = models_log.Selling_Log.objects.filter(active=True, datetime__month=timezone.now().month)
+    topup_log = models_log.Topup_Log.objects.filter(active=True, datetime__month=timezone.now().month)
+    
+    # Cash
+    sell_cash = models_log.Selling_Log.objects.filter(active=True, datetime__month=timezone.now().month).aggregate(Sum('cash_money'))['cash_money__sum']
+    topup_cash = models_log.Topup_Log.objects.filter(active=True, datetime__month=timezone.now().month).aggregate(Sum('cash_money'))['cash_money__sum']
+    # Transfer
+    sell_transfer = models_log.Selling_Log.objects.filter(active=True, datetime__month=timezone.now().month).aggregate(Sum('transfer_money'))['transfer_money__sum']
+    topup_transfer = models_log.Topup_Log.objects.filter(active=True, datetime__month=timezone.now().month).aggregate(Sum('transfer_money'))['transfer_money__sum']
+    
+    if sell_cash == None:
+        sell_cash = 0
+    
+    if topup_cash == None:
+        topup_cash = 0
+        
+    if sell_transfer == None:
+        sell_transfer = 0
+    
+    if topup_transfer == None:
+        topup_transfer = 0
+    
+    total_cash = int(sell_cash)+int(topup_cash)
+    total_transfer = int(sell_transfer)+int(topup_transfer)
+    total_price = int(total_cash)+int(total_transfer)
+    
+    if value == "Sell_Log":
+        return sell_log
+    elif value == "Topup_Log":
+        return topup_log
+    elif value == "Total_Cash":
+        return total_cash
+    elif value == "Total_Transfer":
+        return total_transfer
+    elif value == "Total_Price":
+        return total_price
+    else:
+        return None
+    
 # Stock Out
 def StockOut(request, value, barcode):
     stock_out = models.StockOut.objects.all()
@@ -187,12 +228,24 @@ def CheckStock(request, value):
     else:
         return not_stock
     
+# Billing Report
+def Bill_Report(request, value):
+    sell = models_log.Selling_Log.objects.filter(datetime__month=timezone.now().month)
+    topup = models_log.Topup_Log.objects.filter(datetime__month=timezone.now().month)
+    
+    if value == 'Sell_Log':
+        return sell
+    elif value == 'Topup_Log':
+        return topup
+    else:
+        return None
+    
 # Members
 def Members(request, name):
-    members = models.Members.objects.all().order_by('pk')
-    member = models.Members.objects.filter(first_name=name)
+    members = models.Members.objects.all()
     
     if name is not None:
+        member = models.Members.objects.filter(first_name__icontains=name)
         return member
     else:
         return members

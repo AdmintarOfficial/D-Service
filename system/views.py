@@ -329,6 +329,48 @@ def selling_today_print(request):
         return render(request, 'prints/selling-today.html', context)
     else:
         return redirect('/เข้าสู่ระบบ/')
+    
+# Selling ToMonth
+def selling_tomonth(request):
+    if request.user.is_authenticated:
+        # Context Default
+        context = contexts.Context_Default(request)
+        # Add context
+        context['Sell_Log'] = objects.SellReport_Month(request, 'Sell_Log')
+        context['Topup_Log'] = objects.SellReport_Month(request, 'Topup_Log')
+        context['Total_Cash'] = objects.SellReport_Month(request, 'Total_Cash')
+        context['Total_Transfer'] = objects.SellReport_Month(request, 'Total_Transfer')
+        context['Total_Price'] = objects.SellReport_Month(request, 'Total_Price')
+        return render(request, 'selling-tomonth.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')
+    
+# Selling ToMonth
+def selling_tomonth_print(request):
+    if request.user.is_authenticated:
+        # Context Default
+        context = contexts.Context_Default(request)
+        # Add context
+        context['Sell_Log'] = objects.SellReport_Month(request, 'Sell_Log')
+        context['Topup_Log'] = objects.SellReport_Month(request, 'Topup_Log')
+        context['Total_Cash'] = objects.SellReport_Month(request, 'Total_Cash')
+        context['Total_Transfer'] = objects.SellReport_Month(request, 'Total_Transfer')
+        context['Total_Price'] = objects.SellReport_Month(request, 'Total_Price')
+        return render(request, 'prints/selling-tomonth.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')
+    
+# Selling Report    
+def selling_report(request):
+    if request.user.is_authenticated:
+        # Context Default
+        context = contexts.Context_Default(request)
+        # Add context
+        context['Sell_Log'] = objects.Bill_Report(request, 'Sell_Log')
+        context['Topup_Log'] = objects.Bill_Report(request, 'Topup_Log')
+        return render(request, 'selling-report.html', context)
+    else:
+        return redirect('/เข้าสู่ระบบ/')
 
 #== Report System ==#
 

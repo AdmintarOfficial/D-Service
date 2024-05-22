@@ -6,7 +6,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>สรุปยอดขายประจำวันที่_{% now "d F Y" %}</title>
+  <title>สรุปยอดขายประจำเดือน_{% now "F Y" %}</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet"
@@ -39,7 +39,7 @@
                     <div class="card-header">
                         <h4>
                             ดี เซอร์วิส<span class="text-muted well well-sm shadow-none">(เทสโก้โลตัส อุทุมพรพิสัย)</span>
-                            <small class="float-right">รายงานยอดขายประจำวันที่ {% now "d F Y" %}</small>
+                            <small class="float-right">สรุปยอดขายประจำเดือน {% now "F Y" %}</small>
                         </h4>
                     </div>
                     <!-- /.card-header -->
@@ -54,7 +54,7 @@
                                     <th>เงินสด</th>
                                     <th>ลูกค้า</th>
                                     <th>ประเภท</th>
-                                    <th>เวลา</th>
+                                    <th>วันที่</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -67,7 +67,7 @@
                                     <td>{{sell.cash_money|intcomma}}</td>
                                     <td>{{sell.sell_member.first_name}} {% if sell.sell_member.last_name %}{{sell.sell_member.last_name}}{% endif %}</td>
                                     <td>{{sell.get_bill_status_display}}</td>
-                                    <td>{{sell.datetime|date:'H:i'}}</td>
+                                    <td>{{sell.datetime|date:'d'}}</td>
                                 </tr>
                             {% endfor %}
                             {% for topup in Topup_Log %}
